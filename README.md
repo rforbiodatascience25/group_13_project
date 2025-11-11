@@ -1,6 +1,7 @@
 # Project Contributors
 
 -   s253732 \<- "Vanthys"
+-   s253726 \<- "joshinsky"
 -   TODO: add here
 
 # group_13_project 
