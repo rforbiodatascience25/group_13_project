@@ -1,0 +1,99 @@
+---
+title: "01_load"
+format: html
+editor: visual
+embed-resources: true
+---
+## 01 Loading Data
+
+### Loading Libraries
+
+```{r}
+library("tidyverse")
+library("here")
+```
+
+### Dataset
+
+We selected the dataset [neurotransmitter-receptors](https://www.kaggle.com/datasets/yashasvigoswami/neurotransmitter-receptors)
+
+Downloading the dataset:
+```{r}
+
+FORCE_DOWNLOAD <- FALSE
+
+target_url <- "https://www.kaggle.com/api/v1/datasets/download/yashasvigoswami/neurotransmitter-receptors"
+
+dir.create(here("_raw"), showWarnings = FALSE)
+dir.create(here("data"), showWarnings = FALSE)
+
+output_file <- here("_raw/neurotransmitter-receptors.zip")
+
+if (!file.exists(file = output_file) || FORCE_DOWNLOAD){
+  curl::curl_download(url = target_url, destfile = output_file)
+} else {
+  cat("[INFO]: File exists, and download was not forced")
+}
+```
+
+
+Opening the raw data (zip compressed csv)
+```{r}
+unzip(zipfile = output_file, exdir = here("_raw"))
+
+raw_file <- here("_raw/preproteins.csv")
+
+clean_df <- readr::read_csv(raw_file)
+
+```
+
+### [SKIP] Artificial Splitting and dirtying 
+
+Because we want to simulate a worse dataset, but the theme was too interesting to pass up on, we intentially split the dataset in two parts, and introduce some random errors and nonsensical values. Note that this step is just to demonstrate our abilities to wrangle data correctly. In the following workflows and cells we will pretend that the resulting data is the "raw" dataset. 
+```{r}
+meta_cols <- c(
+  "Protein_Name", "Protein_ID", "Sequence",
+  "3D_Structure_URL", "Organism", "Gene_Name",
+  "Function", "Subunit_Structure"
+)
+
+feature_cols <- setdiff(colnames(clean_df), meta_cols)
+
+clean_df_meta    <- clean_df[, meta_cols, drop = FALSE]
+clean_df_feature <- clean_df[, feature_cols, drop = FALSE]
+
+set.seed(123)
+
+dirty <- function(data) {
+  data %>%
+    mutate(
+      across(where(is.numeric),
+             ~ ifelse(runif(n()) < 0.05,
+                      sample(c(NA, .x * 69420, -42), 1), #decide on best strategy for dirtying
+                      .x)
+      ),
+      across(where(is.character),
+             ~ ifelse(runif(n()) < 0.05,
+                      paste0(.x, "_ERR"),
+                      .x)
+      ),
+      across(where(is.logical),
+             ~ ifelse(runif(n()) < 0.05, NA, .x)
+      )
+    )
+}
+
+dirty_df_meta    <- dirty(clean_df_meta)
+dirty_df_feature <- dirty(clean_df_feature)
+
+readr::write_csv(dirty_df_meta,
+                 here("_raw/neurotransmitter-receptors-dirty-meta.csv"))
+
+readr::write_csv(dirty_df_feature,
+                 here("_raw/neurotransmitter-receptors-dirty-features.csv"))
+
+```
+
+
+
+

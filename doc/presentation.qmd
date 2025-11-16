@@ -1,7 +1,8 @@
 ---
-title: "group_13_final_presentation"
+title: "presentation"
 format: revealjs
 editor: visual
+embed-resources: true
 ---
 
 ## Quarto
