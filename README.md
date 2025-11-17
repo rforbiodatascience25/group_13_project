@@ -2,6 +2,7 @@
 
 -   s253732 \<- "Vanthys"
 -   s253726 \<- "joshinsky"
+-   s253727 \<- "elvin"
 -   TODO: add here
 
 # group_13_project 
