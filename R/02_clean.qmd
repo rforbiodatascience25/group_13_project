@@ -7,53 +7,111 @@ format: html
 library("tidyverse")
 library("here")
 library("purrr")
+library("SnowballC")
 # library("GGally")
 ```
 
 ## Load data
 
 ```{r}
-nt_meta_path <- here("_raw/neurotransmitter-receptors-dirty-meta.csv")
-nt_feat_path <- here("_raw/neurotransmitter-receptors-dirty-features.csv")
+meta_path <- here("data/01_dat_meta_load.csv")
+feat_path <- here("data/01_dat_feature_load.csv")
 
-ntm_dirty <- read_csv(nt_meta_path, show_col_types = FALSE)
-ntf_dirty <- read_csv(nt_feat_path, show_col_types = FALSE)
+meta_df <- read_csv(meta_path, show_col_types = FALSE)
+feature_df <- read_csv(feat_path, show_col_types = FALSE)
 ```
 
-## Neurotransmitter metadata
+## Explore Neurotransmitter metadata
+
+Store the metadata without the 3D structure url and subunit structure.
 
 ```{r}
-ntm_dirty <- ntm_dirty |> select(-`3D_Structure_URL`, 
-                               -`Subunit_Structure`)
-
-ntm_dirty |> head()
+meta_df <- meta_df |> 
+  select(-`3D_Structure_URL`, 
+         -`Subunit_Structure`)
 ```
 
 ```{r}
-ntm_dirty |> 
+n_columns <- meta_df |> 
+  ncol() |> 
+  print()
+
+n_rows <- meta_df |> 
+  nrow() |> 
+  print()
+
+meta_df |> 
+  head()
+```
+
+In the dataset, we have `r n_rows` proteins. The proteins are annotated with `r n_columns` meta features all of data type \<chr\>:
+
+-   The name of the protein
+
+-   The UniProt ID
+
+-   The amino acid sequence
+
+-   The organism
+
+-   The name of the gene
+
+-   The function as specified in UniProt
+
+Let's explore a little bit. What organisms does our data comes from?
+
+```{r}
+meta_df |> 
   count(Organism, name = "value") |> 
   ggplot(aes(x = "", y = value, fill = Organism)) +
     geom_col(width = 1) +
     coord_polar(theta = "y") +
     scale_fill_viridis_d(option = "turbo") +
     theme_void()
+
+meta_df |> 
+  count(Organism, name = "value") |> 
+  print()
 ```
 
+We have 10 organisms in total, and most of the proteins are from human (13), rat (12), the nematode worm Caenorhabditis (12), and the fungus Aspergillus (12).
+
+Let's find out if we have some recurring functions. For this, we will count the most frequent words used in the Function column (e.g. "receptor", "serotonin", etc.). We use the SnowballC package to get only word stems. This way we avoid that for instance "receptor" and "receptors" are counted separately.
+
+```{r}
+recurring_words <- meta_df |> 
+  mutate(words = str_split(Function, " ")) |> 
+  unnest(words) |> 
+  mutate(words = wordStem(words, language = "en")) |> #get only wordstems
+  filter(!words %in% c("of", "as", "a", "part", "that", "the", "function")) |>
+  count(words, sort=TRUE) |> 
+  mutate(relative_freq = n/63) |> 
+  print()
+
+recurring_words |> 
+  filter(n > 6) |> 
+  ggplot(aes(x = words, 
+             y = n)) +
+    geom_col() +
+    theme(axis.text.x = element_text(angle = 70, hjust = 1))
+```
+
+We see that the protein functions like "receptor", "channel", or "subunit" show up often as well as information on ion usage ("chlorid", "cation", "ionotrop"), or neurotransmitter ("serotonin", "glutam", "glutamate-g"). This might be helpful when analysing the amino acid sequence for functional information or specific neurotransmitters targeted.
 
 ## Neurotransmitter features
 
+Separate feature into the 20 amino acids (aa) and rest (rest).
+
 ```{r}
-ntf_dirty |> head()
-ntf_aa <- ntf_dirty %>% select(starts_with("aa_"))
-ntf_rest <- ntf_dirty %>% select(-starts_with("aa_"))
+feature_df |> head()
+feature_aa <- feature_df %>% select(starts_with("aa_"))
+feature_rest <- feature_df %>% select(-starts_with("aa_"))
 
-ntf_aa |> head()
-ntf_rest |> head()
+feature_aa |> head()
+feature_rest |> head()
 ```
-
 
 ```{r, warning=FALSE, message=FALSE}
-# ntf_rest |> ggpairs() + scale_x_log10() + scale_y_log10()
-# ntf_aa |> ggpairs() + scale_x_log10() + scale_y_log10()
+# feature_rest |> ggpairs() + scale_x_log10() + scale_y_log10()
+# feature_aa |> ggpairs() + scale_x_log10() + scale_y_log10()
 ```
-
