@@ -13,24 +13,25 @@ library("purrr")
 ## Load data
 
 ```{r}
-nt_meta_path <- here("_raw/neurotransmitter-receptors-dirty-meta.csv")
-nt_feat_path <- here("_raw/neurotransmitter-receptors-dirty-features.csv")
+meta_path <- here("data/01_dat_meta_load.csv")
+feat_path <- here("data/01_dat_feature_load.csv")
 
-ntm_dirty <- read_csv(nt_meta_path, show_col_types = FALSE)
-ntf_dirty <- read_csv(nt_feat_path, show_col_types = FALSE)
+meta_df <- read_csv(meta_path, show_col_types = FALSE)
+feature_df <- read_csv(feat_path, show_col_types = FALSE)
 ```
 
 ## Neurotransmitter metadata
-
+Inspect the metadata without the 3D structure url and subunit structure.
 ```{r}
-ntm_dirty <- ntm_dirty |> select(-`3D_Structure_URL`, 
+meta_df <- meta_df |> select(-`3D_Structure_URL`, 
                                -`Subunit_Structure`)
 
-ntm_dirty |> head()
+meta_df |> head()
 ```
 
+Then, look at what organisms our data comes from.
 ```{r}
-ntm_dirty |> 
+meta_df |> 
   count(Organism, name = "value") |> 
   ggplot(aes(x = "", y = value, fill = Organism)) +
     geom_col(width = 1) +
@@ -41,19 +42,19 @@ ntm_dirty |>
 
 
 ## Neurotransmitter features
-
+Separate feature into the 20 amino acids (aa) and rest (rest).
 ```{r}
-ntf_dirty |> head()
-ntf_aa <- ntf_dirty %>% select(starts_with("aa_"))
-ntf_rest <- ntf_dirty %>% select(-starts_with("aa_"))
+feature_df |> head()
+feature_aa <- feature_df %>% select(starts_with("aa_"))
+feature_rest <- feature_df %>% select(-starts_with("aa_"))
 
-ntf_aa |> head()
-ntf_rest |> head()
+feature_aa |> head()
+feature_rest |> head()
 ```
 
 
 ```{r, warning=FALSE, message=FALSE}
-# ntf_rest |> ggpairs() + scale_x_log10() + scale_y_log10()
-# ntf_aa |> ggpairs() + scale_x_log10() + scale_y_log10()
+# feature_rest |> ggpairs() + scale_x_log10() + scale_y_log10()
+# feature_aa |> ggpairs() + scale_x_log10() + scale_y_log10()
 ```
 
