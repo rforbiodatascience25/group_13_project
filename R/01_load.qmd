@@ -24,10 +24,8 @@ FORCE_DOWNLOAD <- FALSE
 
 target_url <- "https://www.kaggle.com/api/v1/datasets/download/yashasvigoswami/neurotransmitter-receptors"
 
-dir.create(here("_raw"), showWarnings = FALSE)
-dir.create(here("data"), showWarnings = FALSE)
-
-output_file <- here("_raw/neurotransmitter-receptors.zip")
+dir.create(here("data/_raw"), showWarnings = FALSE)
+output_file <- here("data/_raw/neurotransmitter-receptors.zip")
 
 if (!file.exists(file = output_file) || FORCE_DOWNLOAD){
   curl::curl_download(url = target_url, destfile = output_file)
@@ -39,9 +37,9 @@ if (!file.exists(file = output_file) || FORCE_DOWNLOAD){
 
 Opening the raw data (zip compressed csv)
 ```{r}
-unzip(zipfile = output_file, exdir = here("_raw"))
+unzip(zipfile = output_file, exdir = here("data/_raw"))
 
-raw_file <- here("_raw/preproteins.csv")
+raw_file <- here("data/_raw/preproteins.csv")
 
 clean_df <- readr::read_csv(raw_file)
 
@@ -87,10 +85,10 @@ dirty_df_meta    <- dirty(clean_df_meta)
 dirty_df_feature <- dirty(clean_df_feature)
 
 readr::write_csv(dirty_df_meta,
-                 here("_raw/neurotransmitter-receptors-dirty-meta.csv"))
+                 here("data/_raw/neurotransmitter-receptors-dirty-meta.csv"))
 
 readr::write_csv(dirty_df_feature,
-                 here("_raw/neurotransmitter-receptors-dirty-features.csv"))
+                 here("data/_raw/neurotransmitter-receptors-dirty-features.csv"))
 
 ```
 
