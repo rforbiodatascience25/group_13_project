@@ -1,5 +1,5 @@
 ---
-title: "02_wrangling"
+title: "02_clean"
 format: html
 ---
 
