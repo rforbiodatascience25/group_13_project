@@ -1,0 +1,32 @@
+---
+title: "02_wrangling"
+format: html
+---
+
+```{r}
+library("tidyverse")
+library("here")
+```
+
+```{r}
+nt_meta_path <- here("_raw/neurotransmitter-receptors-dirty-meta.csv")
+nt_dirty <- read_csv(nt_meta_path, show_col_types = FALSE)
+```
+
+```{r}
+nt_dirty <- nt_dirty |> select(-`3D_Structure_URL`, 
+                               -`Subunit_Structure`)
+
+nt_dirty |> head()
+```
+
+```{r}
+nt_dirty |> 
+  count(Organism, name = "value") |> 
+  ggplot(aes(x = "", y = value, fill = Organism)) +
+    geom_col(width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_viridis_d(option = "turbo") +
+    theme_void()
+```
+
