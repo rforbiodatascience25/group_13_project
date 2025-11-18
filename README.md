@@ -2,7 +2,7 @@
 
 -   s253732 \<- "Vanthys"
 -   s253726 \<- "joshinsky"
--   s253727 \<- "elvin"
+-   s253727 \<- "elvinush"
 -   s253702 \<- "Mikel"
 -   TODO: add here
 
