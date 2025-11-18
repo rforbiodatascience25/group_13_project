@@ -4,6 +4,7 @@ format: html
 editor: visual
 embed-resources: true
 ---
+
 ## 01 Loading Data
 
 ### Loading Libraries
@@ -18,6 +19,7 @@ library("here")
 We selected the dataset [neurotransmitter-receptors](https://www.kaggle.com/datasets/yashasvigoswami/neurotransmitter-receptors)
 
 Downloading the dataset:
+
 ```{r}
 
 FORCE_DOWNLOAD <- FALSE
@@ -36,8 +38,8 @@ if (!file.exists(file = output_file) || FORCE_DOWNLOAD){
 }
 ```
 
-
 Opening the raw data (zip compressed csv)
+
 ```{r}
 unzip(zipfile = output_file, exdir = here("_raw"))
 
@@ -47,9 +49,10 @@ clean_df <- readr::read_csv(raw_file)
 
 ```
 
-### [SKIP] Artificial Splitting and dirtying 
+### \[SKIP\] Artificial Splitting and dirtying
 
-Because we want to simulate a worse dataset, but the theme was too interesting to pass up on, we intentially split the dataset in two parts, and introduce some random errors and nonsensical values. Note that this step is just to demonstrate our abilities to wrangle data correctly. In the following workflows and cells we will pretend that the resulting data is the "raw" dataset. 
+Because we want to simulate a worse dataset, but the theme was too interesting to pass up on, we intentially split the dataset in two parts, and introduce some random errors and nonsensical values. Note that this step is just to demonstrate our abilities to wrangle data correctly. In the following workflows and cells we will pretend that the resulting data is the "raw" dataset.
+
 ```{r}
 meta_cols <- c(
   "Protein_Name", "Protein_ID", "Sequence",
@@ -93,7 +96,3 @@ readr::write_csv(dirty_df_feature,
                  here("_raw/neurotransmitter-receptors-dirty-features.csv"))
 
 ```
-
-
-
-
