@@ -84,13 +84,11 @@ dirty <- function(data) {
 dirty_df_meta    <- dirty(clean_df_meta)
 dirty_df_feature <- dirty(clean_df_feature)
 
-dir.create(here("data/dirty"), showWarnings = FALSE)
-
 readr::write_csv(dirty_df_meta,
-                 here("data/dirty/neurotransmitter-receptors-dirty-meta.csv"))
+                 here("data/01_dat_meta_load.csv"))
 
 readr::write_csv(dirty_df_feature,
-                 here("data/dirty/neurotransmitter-receptors-dirty-features.csv"))
+                 here("data/01_dat_feature_load.csv"))
 
 ```
 
