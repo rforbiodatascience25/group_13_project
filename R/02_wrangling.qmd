@@ -6,18 +6,27 @@ format: html
 ```{r}
 library("tidyverse")
 library("here")
+library("purrr")
+library("patchwork")
 ```
+
+## Load data
 
 ```{r}
 nt_meta_path <- here("_raw/neurotransmitter-receptors-dirty-meta.csv")
-nt_dirty <- read_csv(nt_meta_path, show_col_types = FALSE)
+nt_feat_path <- here("_raw/neurotransmitter-receptors-dirty-features.csv")
+
+ntm_dirty <- read_csv(nt_meta_path, show_col_types = FALSE)
+ntf_dirty <- read_csv(nt_feat_path, show_col_types = FALSE)
 ```
 
+## Neurotransmitter metadata
+
 ```{r}
-nt_dirty <- nt_dirty |> select(-`3D_Structure_URL`, 
+ntm_dirty <- ntm_dirty |> select(-`3D_Structure_URL`, 
                                -`Subunit_Structure`)
 
-nt_dirty |> head()
+ntm_dirty |> head()
 ```
 
 ```{r}
@@ -29,4 +38,18 @@ nt_dirty |>
     scale_fill_viridis_d(option = "turbo") +
     theme_void()
 ```
+
+
+## Neurotransmitter features
+
+```{r}
+ntf_dirty |> head()
+ntf_aa <- ntf_dirty %>% select(starts_with("aa_"))
+ntf_rest <- ntf_dirty %>% select(-starts_with("aa_"))
+
+ntf_aa |> head()
+ntf_rest |> head()
+```
+
+
 
