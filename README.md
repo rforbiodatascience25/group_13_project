@@ -3,7 +3,7 @@
 -   s253732 \<- "Vanthys"
 -   s253726 \<- "joshinsky"
 -   s253727 \<- "elvinush"
--   s253702 \<- "Mikel"
+-   s253702 \<- "MikelGarciaData"
 -   s253718 \<- "akoskimpian"
 
 # group_13_project
