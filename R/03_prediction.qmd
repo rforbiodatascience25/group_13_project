@@ -3,7 +3,6 @@ title: "03_prediction"
 format: html
 ---
 
-
 Loading libraries
 
 ```{r}
@@ -14,8 +13,8 @@ library("tidymodels")
 
 ```
 
+loading data
 
-loading data 
 ```{r}
 meta_path <- here("data/01_dat_meta_load.csv")
 feat_path <- here("data/01_dat_feature_load.csv")
@@ -24,18 +23,18 @@ meta_df <- read_csv(meta_path, show_col_types = FALSE)
 feature_df <- read_csv(feat_path, show_col_types = FALSE)
 
 ```
-baldas 
+
+baldas
 
 ```{r}
 meta_df
 ```
 
-
 ```{r}
 feature_df
 ```
-defining two classes. Based on Knlowedge provided by Ákos, we will spit the receptors into 3 classes: Glutamate, Ionotropic and Cysloop receptors. It would be interesting to see if we can predict the class from AA composition.
-Todo this we first add a new column to the meta df called "class".
+
+defining two classes. Based on Knlowedge provided by Ákos, we will spit the receptors into 3 classes: Glutamate, Cys-loop and Other receptors (which includes 2 ionotropic receptors not part of the other 2 superfamilies). It would be interesting to see if we can predict the class from AA composition. To do this we first add a new column to the meta_df called "class".
 
 ```{r}
 meta_with_classes <- meta_df |> 
@@ -49,5 +48,3 @@ meta_with_classes <- meta_df |>
 
 meta_with_classes
 ```
-
-
