@@ -7,7 +7,7 @@ format: html
 library("tidyverse")
 library("here")
 library("purrr")
-library("SnowballC")
+#library("SnowballC")
 # library("GGally")
 ```
 
@@ -76,27 +76,27 @@ meta_df |>
 
 We have 10 organisms in total, and most of the proteins are from human (13), rat (12), the nematode worm Caenorhabditis (12), and the fungus Aspergillus (12).
 
-Let's find out if we have some recurring functions. For this, we will count the most frequent words used in the Function column (e.g. "receptor", "serotonin", etc.). We use the SnowballC package to get only word stems. This way we avoid that for instance "receptor" and "receptors" are counted separately.
+Let's find out if we have some recurring functions. For this, we will count the most frequent words used in the Function column (e.g. "receptor", "serotonin", etc.).
 
 ```{r}
-recurring_words <- meta_df |> 
-  mutate(words = str_split(Function, " ")) |> 
-  unnest(words) |> 
-  mutate(words = wordStem(words, language = "en")) |> #get only wordstems
-  filter(!words %in% c("of", "as", "a", "part", "that", "the", "function")) |>
-  count(words, sort=TRUE) |> 
-  mutate(relative_freq = n/63) |> 
-  print()
+recurring_words <- meta_df |>
+  mutate(words = str_split(tolower(Function), "[[:space:][:punct:]]+")) |>
+  unnest(words) |>
+  filter(words != "") |>
+  filter(!words %in% c("of","as","a","part","that","the","function", "n", "non", "5")) |>
+  count(words, sort = TRUE) |>
+  mutate(relative_freq = n / sum(n))
 
-recurring_words |> 
-  filter(n > 6) |> 
-  ggplot(aes(x = words, 
-             y = n)) +
-    geom_col() +
-    theme(axis.text.x = element_text(angle = 70, hjust = 1))
+recurring_words
+
+recurring_words |>
+  filter(n > 6) |>
+  ggplot(aes(x = reorder(words, -n), y = n)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 70, hjust = 1))
 ```
 
-We see that the protein functions like "receptor", "channel", or "subunit" show up often as well as information on ion usage ("chlorid", "cation", "ionotrop"), or neurotransmitter ("serotonin", "glutam", "glutamate-g"). This might be helpful when analysing the amino acid sequence for functional information or specific neurotransmitters targeted.
+We see that the protein functions like "receptor", "channel", structural information such as "subunit" show up often as well as information on ion usage ("chlorid", "cation", "ionotropic"), or neurotransmitter ("glutamate", "serotonin").
 
 ## Neurotransmitter features
 
