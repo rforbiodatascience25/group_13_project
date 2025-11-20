@@ -1,0 +1,118 @@
+
+---
+title: "02_clean"
+format: html
+---
+
+```{r}
+library("tidyverse")
+library("here")
+library("purrr")
+#library("SnowballC")
+# library("GGally")
+```
+
+## Load data
+
+```{r}
+meta_path <- here("data/01_dat_meta_load.csv")
+feat_path <- here("data/01_dat_feature_load.csv")
+
+meta_df <- read_csv(meta_path, show_col_types = FALSE)
+feature_df <- read_csv(feat_path, show_col_types = FALSE)
+```
+
+## Explore Neurotransmitter metadata
+
+Store the metadata without the 3D structure url and subunit structure.
+
+```{r}
+meta_df <- meta_df |> 
+  select(-`3D_Structure_URL`, 
+         -`Subunit_Structure`)
+```
+
+```{r}
+n_columns <- meta_df |> 
+  ncol() |> 
+  print()
+
+n_rows <- meta_df |> 
+  nrow() |> 
+  print()
+
+meta_df |> 
+  head()
+```
+
+In the dataset, we have `r n_rows` proteins. The proteins are annotated with `r n_columns` meta features all of data type \<chr\>:
+
+-   The name of the protein
+
+-   The UniProt ID
+
+-   The amino acid sequence
+
+-   The organism
+
+-   The name of the gene
+
+-   The function as specified in UniProt
+
+Let's explore a little bit. What organisms does our data comes from?
+
+```{r}
+meta_df |> 
+  count(Organism, name = "value") |> 
+  ggplot(aes(x = "", y = value, fill = Organism)) +
+    geom_col(width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_viridis_d(option = "turbo") +
+    theme_void()
+
+meta_df |> 
+  count(Organism, name = "value") |> 
+  print()
+```
+
+We have 10 organisms in total, and most of the proteins are from human (13), rat (12), the nematode worm Caenorhabditis (12), and the fungus Aspergillus (12).
+
+Let's find out if we have some recurring functions. For this, we will count the most frequent words used in the Function column (e.g. "receptor", "serotonin", etc.).
+
+```{r}
+recurring_words <- meta_df |>
+  mutate(words = str_split(tolower(Function), "[[:space:][:punct:]]+")) |>
+  unnest(words) |>
+  filter(words != "") |>
+  filter(!words %in% c("of","as","a","part","that","the","function", "n", "non", "5")) |>
+  count(words, sort = TRUE) |>
+  mutate(relative_freq = n / sum(n))
+
+recurring_words
+
+recurring_words |>
+  filter(n > 6) |>
+  ggplot(aes(x = reorder(words, -n), y = n)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 70, hjust = 1))
+```
+
+We see that the protein functions like "receptor", "channel", structural information such as "subunit" show up often as well as information on ion usage ("chlorid", "cation", "ionotropic"), or neurotransmitter ("glutamate", "serotonin").
+
+## Neurotransmitter features
+
+Separate feature into the 20 amino acids (aa) and rest (rest).
+
+```{r}
+feature_df |> head()
+feature_aa <- feature_df %>% select(starts_with("aa_"))
+feature_rest <- feature_df %>% select(-starts_with("aa_"))
+
+feature_aa |> head()
+feature_rest |> head()
+```
+
+```{r, warning=FALSE, message=FALSE}
+# feature_rest |> ggpairs() + scale_x_log10() + scale_y_log10()
+# feature_aa |> ggpairs() + scale_x_log10() + scale_y_log10()
+```
