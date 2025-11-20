@@ -38,16 +38,74 @@ defining two classes. Based on Knlowedge provided by Ákos, we will spit the rec
 Todo this we first add a new column to the meta df called "class".
 
 ```{r}
-meta_with_classes <- meta_df |> 
+meta_classed_df <- meta_df |> 
     mutate(
-      receptor_class = case_when(
+      Receptor_class = case_when(
           str_detect(Protein_Name, "Glutamate") ~ "Glutamate",
           str_detect(Protein_Name, "Ionotropic")  ~ "Ionotropic",
           TRUE       ~ "CysLoop"
   )
 )
 
-meta_with_classes
+meta_classed_df
 ```
 
+```{r}
+joined_classed_df <- meta_classed_df |>
+         select(Protein_ID, Receptor_class) |>
+         bind_cols(feature_df |>
+                      select(starts_with("aa_")))
+joined_classed_df
+```
+split it into training and test:
+
+```{r}
+
+set.seed(123)
+split  <- initial_split(joined_classed_df, prop = 0.8, strata = Receptor_class)
+train  <- training(split)
+test   <- testing(split)
+```
+
+define a recipe
+
+```{r}
+rec <- recipe(Receptor_class ~ ., data = train) |>
+  step_select(Receptor_class, starts_with("aa_"))
+```
+
+a workflow
+
+```{r}
+rf_simple <- rand_forest(trees = 1000) |>
+  set_engine("randomForest") |>
+  set_mode("classification")
+
+wf_simple <- workflow() |>
+  add_recipe(rec) |>
+  add_model(rf_simple)
+
+```
+
+fit model
+
+```{r}
+fit_simple <- wf_simple |> last_fit(split)
+metrics <- collect_metrics(fit_simple)
+metrics
+```
+plot metrics 
+
+```{r}
+ggplot(metrics, aes(x = .metric, y = .estimate)) +
+  geom_col() +
+  labs(x = "Metric", y = "Estimate")
+```
+```{r}
+fit <- fit_simple$.workflow[[1]] |> extract_fit_parsnip()
+rf_obj <- fit$fit          # randomForest object
+
+plot(rf_obj)
+
+```
 
