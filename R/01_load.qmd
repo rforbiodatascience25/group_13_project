@@ -26,6 +26,8 @@ FORCE_DOWNLOAD <- FALSE
 
 target_url <- "https://www.kaggle.com/api/v1/datasets/download/yashasvigoswami/neurotransmitter-receptors"
 
+
+dir.create(here("data"), showWarnings = FALSE)
 dir.create(here("data/_raw"), showWarnings = FALSE)
 output_file <- here("data/_raw/neurotransmitter-receptors.zip")
 
@@ -66,7 +68,7 @@ clean_df_feature <- clean_df[, feature_cols, drop = FALSE]
 set.seed(123)
 
 dirty <- function(data) {
-  data |> 
+  data |>
     mutate(
       across(where(is.numeric),
              ~ ifelse(runif(n()) < 0.05,
@@ -88,9 +90,9 @@ dirty_df_meta    <- dirty(clean_df_meta)
 dirty_df_feature <- dirty(clean_df_feature)
 
 readr::write_csv(dirty_df_meta,
-                 here("data/_raw/neurotransmitter-receptors-dirty-meta.csv"))
+                 here("data/01_dat_meta_load.csv"))
 
 readr::write_csv(dirty_df_feature,
-                 here("data/_raw/neurotransmitter-receptors-dirty-features.csv"))
+                 here("data/01_dat_feature_load.csv"))
 
 ```
