@@ -66,7 +66,7 @@ clean_df_feature <- clean_df[, feature_cols, drop = FALSE]
 set.seed(123)
 
 dirty <- function(data) {
-  data %>%
+  data |> 
     mutate(
       across(where(is.numeric),
              ~ ifelse(runif(n()) < 0.05,
@@ -88,9 +88,9 @@ dirty_df_meta    <- dirty(clean_df_meta)
 dirty_df_feature <- dirty(clean_df_feature)
 
 readr::write_csv(dirty_df_meta,
-                 here("data/01_dat_meta_load.csv"))
+                 here("data/_raw/neurotransmitter-receptors-dirty-meta.csv"))
 
 readr::write_csv(dirty_df_feature,
-                 here("data/01_dat_feature_load.csv"))
+                 here("data/_raw/neurotransmitter-receptors-dirty-features.csv"))
 
 ```
