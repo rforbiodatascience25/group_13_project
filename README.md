@@ -10,6 +10,11 @@
 
 This is the repo for group 13's final project of the course R for Bio Data Science
 
+## Project structure
+
+![Imagen de WhatsApp 2025-11-18 a las 12 48 21_b40a0c05](https://github.com/user-attachments/assets/eeb91813-cbe6-4391-a333-a76247de3fb6)
+
+
 ## Dataset Neurotransmitter Receptors & Protein Sequences
 
 ## Rendering
