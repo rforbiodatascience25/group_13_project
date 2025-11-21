@@ -131,7 +131,7 @@ cleaner_combined |>
   )
 ```
 
-Next, we will deal with the numeric outliers in our data. We will identify them using the IQR-method that boxplots use as well. Since they are artificial, it gives no biological insight to keep them, so we will impute them using the median-method.
+Next, we will deal with the numeric outliers in our data. We will identify them using the IQR-method that boxplots use as well. Since they are artificial, it gives no biological insight to keep them, so we will impute them using the median-method. We prefer the media-method over the mean-method here, because the latter is much more sensitive to large outliers, which is what we have in our data.
 
 ```{r}
 cleaner_combined <- cleaner_combined |>
