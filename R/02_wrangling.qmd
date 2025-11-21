@@ -1,0 +1,101 @@
+---
+title: "02_wrangling"
+format: html
+---
+
+```{r}
+library("tidyverse")
+library("here")
+library("purrr")
+# library("GGally")
+```
+
+## Load data
+
+```{r}
+nt_meta_path <- here("_raw/neurotransmitter-receptors-dirty-meta.csv")
+nt_feat_path <- here("_raw/neurotransmitter-receptors-dirty-features.csv")
+
+ntm_dirty <- read_csv(nt_meta_path, show_col_types = FALSE)
+ntf_dirty <- read_csv(nt_feat_path, show_col_types = FALSE)
+```
+
+## Neurotransmitter metadata
+
+```{r}
+ntm_dirty <- ntm_dirty |> select(-`3D_Structure_URL`, 
+                               -`Subunit_Structure`)
+
+ntm_dirty |> head()
+```
+
+```{r}
+ntm_dirty |> 
+  count(Organism, name = "value") |> 
+  ggplot(aes(x = "", y = value, fill = Organism)) +
+    geom_col(width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_viridis_d(option = "turbo") +
+    theme_void()
+```
+
+
+## Neurotransmitter features
+
+```{r}
+ntf_dirty |> head()
+ntf_aa <- ntf_dirty %>% select(starts_with("aa_"))
+ntf_rest <- ntf_dirty %>% select(-starts_with("aa_"))
+
+ntf_aa |> head()
+ntf_rest |> head()
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+# ntf_rest |> ggpairs() + scale_x_log10() + scale_y_log10()
+# ntf_aa |> ggpairs() + scale_x_log10() + scale_y_log10()
+```
+
+
+```{r}
+# Function to generate scatterplots for each pair of numeric variables, after normalizing to [-1,1]
+scatterplot_pairs <- function(df) {
+  
+  # Select only numeric variables
+  numeric_vars <- names(df)[sapply(df, is.numeric)]
+  
+  # Normalize numeric variables to [-1, 1]
+  normalize <- function(x) {
+    rng <- range(x, na.rm = TRUE)
+    if (diff(rng) == 0) return(rep(0, length(x))) # handle constant columns
+    return(2 * (x - rng[1]) / diff(rng) - 1)
+  }
+  
+  df[numeric_vars] <- lapply(df[numeric_vars], normalize)
+  
+  n <- length(numeric_vars)
+  
+  # Loop over each unique pair of numeric variables
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      x_var <- numeric_vars[i]
+      y_var <- numeric_vars[j]
+      
+      # Create the scatterplot
+      p <- ggplot(df, aes_string(x = x_var, y = y_var)) +
+        geom_point(color = "steelblue", alpha = 0.7) +
+        labs(title = paste(x_var, "vs", y_var), x = x_var, y = y_var) +
+        theme_minimal()
+      
+      # Display the plot
+      print(p)
+    }
+  }
+}
+```
+
+```{r, warning=FALSE, message=FALSE}
+ntf_rest |> scatterplot_pairs()
+```
+

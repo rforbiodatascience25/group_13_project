@@ -4,6 +4,7 @@ format: html
 editor: visual
 embed-resources: true
 ---
+
 ## 01 Loading Data
 
 ### Loading Libraries
@@ -18,12 +19,15 @@ library("here")
 We selected the dataset [neurotransmitter-receptors](https://www.kaggle.com/datasets/yashasvigoswami/neurotransmitter-receptors)
 
 Downloading the dataset:
+
 ```{r}
 
 FORCE_DOWNLOAD <- FALSE
 
 target_url <- "https://www.kaggle.com/api/v1/datasets/download/yashasvigoswami/neurotransmitter-receptors"
 
+
+dir.create(here("data"), showWarnings = FALSE)
 dir.create(here("data/_raw"), showWarnings = FALSE)
 output_file <- here("data/_raw/neurotransmitter-receptors.zip")
 
@@ -34,8 +38,8 @@ if (!file.exists(file = output_file) || FORCE_DOWNLOAD){
 }
 ```
 
-
 Opening the raw data (zip compressed csv)
+
 ```{r}
 unzip(zipfile = output_file, exdir = here("data/_raw"))
 
@@ -45,9 +49,10 @@ clean_df <- readr::read_csv(raw_file)
 
 ```
 
-### [SKIP] Artificial Splitting and dirtying 
+### \[SKIP\] Artificial Splitting and dirtying
 
-Because we want to simulate a worse dataset, but the theme was too interesting to pass up on, we intentially split the dataset in two parts, and introduce some random errors and nonsensical values. Note that this step is just to demonstrate our abilities to wrangle data correctly. In the following workflows and cells we will pretend that the resulting data is the "raw" dataset. 
+Because we want to simulate a worse dataset, but the theme was too interesting to pass up on, we intentially split the dataset in two parts, and introduce some random errors and nonsensical values. Note that this step is just to demonstrate our abilities to wrangle data correctly. In the following workflows and cells we will pretend that the resulting data is the "raw" dataset.
+
 ```{r}
 meta_cols <- c(
   "Protein_Name", "Protein_ID", "Sequence",
@@ -63,7 +68,7 @@ clean_df_feature <- clean_df[, feature_cols, drop = FALSE]
 set.seed(123)
 
 dirty <- function(data) {
-  data %>%
+  data |>
     mutate(
       across(where(is.numeric),
              ~ ifelse(runif(n()) < 0.05,
@@ -91,7 +96,3 @@ readr::write_csv(dirty_df_feature,
                  here("data/01_dat_feature_load.csv"))
 
 ```
-
-
-
-
