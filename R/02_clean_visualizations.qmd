@@ -33,7 +33,7 @@ ntm_dirty <- ntm_dirty |> select(-"3D_Structure_URL",
 ntm_dirty |> head()
 ```
 
-Let's take a look at what organisms our proteins come from. We can see multiple species commonly used in molecular biology research, with the most proteins coming from Homo sapiens, some Rattus species, Caenorhabditis elegans and some Aspergillus species. However, we also notice that there is a species called Homo_ERR, which should probably be converted to Homo in the cleaning process.
+Let's take a look at what organisms our proteins come from.
 
 ```{r}
 ntm_dirty |> 
@@ -44,6 +44,8 @@ ntm_dirty |>
     scale_fill_viridis_d(option = "turbo") +
     theme_void()
 ```
+
+We can see multiple species commonly used in molecular biology research, with the most proteins coming from Homo sapiens, some Rattus species, Caenorhabditis elegans and some Aspergillus species. However, we also notice that there is a species called Homo_ERR, which should probably be converted to Homo in the cleaning process.
 
 ## Neurotransmitter features
 
@@ -58,12 +60,17 @@ ntf_rest |> head()
 
 ## Merge datasets
 
+Using bind_cols() would be enticing but is bad practice, because it blindly matches rows by their position. To avoid any potential problems arising from this, we create a .row_id key in each dataset and join them by that key.
+
 ```{r}
-dirty_combined <- bind_cols(ntm_dirty, ntf_dirty)
+ntm_dirty2 <- ntm_dirty |> mutate(.row_id = row_number())
+ntf_dirty2 <- ntf_dirty |> mutate(.row_id = row_number())
+
+dirty_combined <- 
+  full_join(ntm_dirty2, ntf_dirty2, by = ".row_id") |>
+  select(-.row_id)
 dirty_combined |> head()
 ```
-
-Using bind_cols() is risky, since it blindly combines by rownumber but there is no other choice for our data.
 
 ## Clean data
 
@@ -84,7 +91,7 @@ sum(is.na(dirty_combined))
 
 From this we can tell that our dataset only contains one NA value.
 
-However, we know that a lot of the string values have an 'ERR' attached. We should also check how many of those exist.
+However, we know that some of the string values have an '\_ERR' attached. We should also check how many of those exist.
 
 ```{r}
 dirty_combined |>
@@ -105,7 +112,6 @@ dirty_combined |>
   pivot_longer(everything(),
                names_to = "variable",
                values_to = "value") |>
-  mutate(value = ifelse(value <= 0, NA, value)) |>
   ggplot(aes(x = variable, y = log(value))) +
   geom_boxplot(outlier.size = 0.8) +
   theme_bw() +
@@ -164,7 +170,10 @@ cleaner_combined |>
   select(where(is.numeric)) |>
   pivot_longer(everything(), names_to = "variable", values_to = "value") |>
   ggplot(aes(x = variable, y = log(value))) +
-  geom_boxplot()
+  geom_boxplot() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
 ```
 
 As is visible, the outliers have been successfully dealt with.
