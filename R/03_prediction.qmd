@@ -16,28 +16,16 @@ library("tidymodels")
 loading data
 
 ```{r}
-meta_path <- here("data/01_dat_meta_load.csv")
-feat_path <- here("data/01_dat_feature_load.csv")
+clean_path <- here("data/02_data_clean.csv")
 
-meta_df <- read_csv(meta_path, show_col_types = FALSE)
-feature_df <- read_csv(feat_path, show_col_types = FALSE)
+clean_df <- read_csv(clean_path, show_col_types = FALSE)
 
-```
-
-baldas
-
-```{r}
-meta_df
-```
-
-```{r}
-feature_df
 ```
 
 defining two classes. Based on Knlowedge provided by Ákos, we will spit the receptors into 3 classes: Glutamate, Cys-loop and Other receptors (which includes 2 ionotropic receptors not part of the other 2 superfamilies). It would be interesting to see if we can predict the class from AA composition. To do this we first add a new column to the meta_df called "class".
 
 ```{r}
-meta_classed_df <- meta_df |> 
+clean_classed_df <- clean_df |> 
     mutate(
       Receptor_class = case_when(
           str_detect(Protein_Name, "Glutamate") ~ "Glutamate",
@@ -46,22 +34,21 @@ meta_classed_df <- meta_df |>
   )
 )
 
-meta_classed_df
+clean_classed_df
 ```
 
 ```{r}
-joined_classed_df <- meta_classed_df |>
-         select(Protein_ID, Receptor_class) |>
-         bind_cols(feature_df |>
-                      select(starts_with("aa_")))
-joined_classed_df
+prediction_df <- clean_classed_df |>
+  select(Protein_ID, Receptor_class, starts_with("aa_"))
+prediction_df
 ```
+
 split it into training and test:
 
 ```{r}
 
 set.seed(123)
-split  <- initial_split(joined_classed_df, prop = 0.8, strata = Receptor_class)
+split  <- initial_split(prediction_df, prop = 0.8, strata = Receptor_class)
 train  <- training(split)
 test   <- testing(split)
 ```
@@ -93,13 +80,15 @@ fit_simple <- wf_simple |> last_fit(split)
 metrics <- collect_metrics(fit_simple)
 metrics
 ```
-plot metrics 
+
+plot metrics
 
 ```{r}
 ggplot(metrics, aes(x = .metric, y = .estimate)) +
   geom_col() +
   labs(x = "Metric", y = "Estimate")
 ```
+
 ```{r}
 fit <- fit_simple$.workflow[[1]] |> extract_fit_parsnip()
 rf_obj <- fit$fit          # randomForest object
@@ -107,4 +96,3 @@ rf_obj <- fit$fit          # randomForest object
 plot(rf_obj)
 
 ```
-
