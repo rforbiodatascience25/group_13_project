@@ -145,11 +145,11 @@ cleaner_combined |>
   )
 ```
 
-Next, we will deal with the numeric outliers in our data. We will identify them using the IQR-method that boxplots use as well. Since they are artificial, it gives no biological insight to keep them, so we will impute them using the median-method. We prefer the media-method over the mean-method here, because the latter is much more sensitive to large outliers, which is what we have in our data.
+Next, we will deal with the numeric outliers in our data. There is an important distinction with the numerical variables: the ones that start with "aa" reflect the ratio of a given amino acid in the protein sequence. For all other numeric variables, we identify them using the IQR-method that boxplots use as well. Since they are artificial, it gives no biological insight to keep them, so we will impute them using the median-method. We prefer the media-method over the mean-method here, because the latter is much more sensitive to large outliers, which is what we have in our data.
 
 ```{r}
 cleaner_combined <- cleaner_combined |>
-  mutate(across(where(is.numeric), ~ {
+  mutate(across(where(is.numeric) & !starts_with("aa"), ~ {
        Q1  <- quantile(.x, 0.25, na.rm = TRUE)
        Q3  <- quantile(.x, 0.75, na.rm = TRUE)
        IQR_value <- IQR(.x, na.rm = TRUE)
@@ -165,6 +165,32 @@ cleaner_combined <- cleaner_combined |>
   }))
 ```
 
+OMG GUYS i came up with this super good algorithm I worked like 2 hours on it and then i just realised i can simply count the amino acids in the sequence. but i dont have the heart to delete it. someone else please do it. omg -ákos
+For the "aa" ratio variables, we observe that the most problematic outliers are significantly larger than the rest of the data. The basic idea behind this cleaning algorithm is that the original values of the outliers together with the known amino acid ratios must had been equal to 1. 
+First I point out all the outliers by turning every value that is greater than 1 to an NA. Then I calculate how many NA-s are in a row (na_count), I sum up the remaining amino acid ratios, and substract that number out of 1. Then I divide this number with the na_count (getting fill_value), and fill up the NA-s in the current row with this fill_value. Finally I add up the amino acid ratios to check whether they are equal to 1 in every row after the cleaning.
+```{r}
+cleaner_combined <- cleaner_combined |> 
+  mutate(across(starts_with("aa"), ~ifelse(. > 1, NA, .))) |>
+  rowwise() |>
+  mutate(
+    na_count = sum(is.na(c_across(starts_with("aa")))),
+    existing_sum = sum(c_across(starts_with("aa")), na.rm = TRUE),
+    fill_value = ifelse(na_count > 0, (1 - existing_sum)/na_count, 0),
+    across(starts_with("aa"), ~ifelse(is.na(.), fill_value, .)),
+    aa_ratio_sum = sum(c_across(starts_with("aa")))
+  ) |>
+  #removing columns with the intermediate numbers
+  select(
+    -na_count, 
+    -existing_sum, 
+    -fill_value
+  ) |>
+  ungroup()
+
+
+```
+
+We can look at the boxplots again:
 ```{r}
 cleaner_combined |>
   select(where(is.numeric)) |>
@@ -174,6 +200,7 @@ cleaner_combined |>
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
+cleaner_combined |> head()
 ```
 
 As is visible, the outliers have been successfully dealt with.
