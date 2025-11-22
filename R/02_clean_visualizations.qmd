@@ -24,6 +24,8 @@ ntf_dirty <- read_csv(nt_feat_path, show_col_types = FALSE)
 
 ## Metadata
 
+First we remove unwanted columns from Metadata.
+
 ```{r}
 ntm_dirty <- ntm_dirty |> select(-"3D_Structure_URL", 
                                -"Subunit_Structure")
@@ -31,7 +33,7 @@ ntm_dirty <- ntm_dirty |> select(-"3D_Structure_URL",
 ntm_dirty |> head()
 ```
 
-First we remove unwanted columns from Metadata.
+Let's take a look at what organisms our proteins come from. We can see multiple species commonly used in molecular biology research, with the most proteins coming from Homo sapiens, some Rattus species, Caenorhabditis elegans and some Aspergillus species. However, we also notice that there is a species called Homo_ERR, which should probably be converted to Homo in the cleaning process.
 
 ```{r}
 ntm_dirty |> 
@@ -47,8 +49,8 @@ ntm_dirty |>
 
 ```{r}
 ntf_dirty |> head()
-ntf_aa <- ntf_dirty %>% select(starts_with("aa_"))
-ntf_rest <- ntf_dirty %>% select(-starts_with("aa_"))
+ntf_aa <- ntf_dirty |>  select(starts_with("aa_"))
+ntf_rest <- ntf_dirty |>  select(-starts_with("aa_"))
 
 ntf_aa |> head()
 ntf_rest |> head()
@@ -100,10 +102,16 @@ So in all character columns there are 1-4 values that are marked as error values
 ```{r}
 dirty_combined |>
   select(where(is.numeric)) |>
-  pivot_longer(everything(), names_to = "variable", values_to = "value") |>
+  pivot_longer(everything(),
+               names_to = "variable",
+               values_to = "value") |>
+  mutate(value = ifelse(value <= 0, NA, value)) |>
   ggplot(aes(x = variable, y = log(value))) +
-  geom_boxplot()
-  
+  geom_boxplot(outlier.size = 0.8) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
 ```
 
 To create this graph, we used pivot_longer() to be able to stratify the boxplots on every numeric variable. To make outliers of different variables comparable to one another, values have been log-normalized.
