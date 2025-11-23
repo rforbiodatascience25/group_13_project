@@ -10,6 +10,7 @@ embed-resources: true
 library("tidyverse")
 library("here")
 library("purrr")
+library("stringr")
 ```
 
 ## Load data
@@ -165,30 +166,31 @@ cleaner_combined <- cleaner_combined |>
   }))
 ```
 
-OMG GUYS i came up with this super good algorithm I worked like 2 hours on it and then i just realised i can simply count the amino acids in the sequence. but i dont have the heart to delete it. someone else please do it. omg -ákos
-For the "aa" ratio variables, we observe that the most problematic outliers are significantly larger than the rest of the data. The basic idea behind this cleaning algorithm is that the original values of the outliers together with the known amino acid ratios must had been equal to 1. 
-First I point out all the outliers by turning every value that is greater than 1 to an NA. Then I calculate how many NA-s are in a row (na_count), I sum up the remaining amino acid ratios, and substract that number out of 1. Then I divide this number with the na_count (getting fill_value), and fill up the NA-s in the current row with this fill_value. Finally I add up the amino acid ratios to check whether they are equal to 1 in every row after the cleaning.
+Fixing the amino acid ratios is simple: we can simple recalculate the ratios from the sequence. Afterwards we can check if we did a good job by adding the ratios together and seeing whether they add up to 1.
 ```{r}
+aas <- c("A","C","D","E","F","G","H","I","K","L","M","N","P","Q","R","S","T","V","W","Y")
+
+seq_len <- cleaner_combined |> 
+  pull(Sequence) |> 
+  nchar()
+
+count_mat <- cleaner_combined |>
+  pull(Sequence) |>
+  (\(seqs) sapply(aas, \(a) str_count(seqs, a)))()
+
+ratio_mat <- count_mat / seq_len
+
+colnames(ratio_mat) <- paste0("aa_", aas)
+cleaner_combined[, colnames(ratio_mat)] <- ratio_mat
+
 cleaner_combined <- cleaner_combined |> 
-  mutate(across(starts_with("aa"), ~ifelse(. > 1, NA, .))) |>
-  rowwise() |>
   mutate(
-    na_count = sum(is.na(c_across(starts_with("aa")))),
-    existing_sum = sum(c_across(starts_with("aa")), na.rm = TRUE),
-    fill_value = ifelse(na_count > 0, (1 - existing_sum)/na_count, 0),
-    across(starts_with("aa"), ~ifelse(is.na(.), fill_value, .)),
-    aa_ratio_sum = sum(c_across(starts_with("aa")))
-  ) |>
-  #removing columns with the intermediate numbers
-  select(
-    -na_count, 
-    -existing_sum, 
-    -fill_value
-  ) |>
-  ungroup()
-
-
+    aa_ratio_sum = pick(starts_with("aa_")) |> rowSums()
+  )
+cleaner_combined |> 
+  distinct(aa_ratio_sum)
 ```
+They do add up to one in every case, so it is likely that we managed to fix all the amino acid ratio values.
 
 We can look at the boxplots again:
 ```{r}
