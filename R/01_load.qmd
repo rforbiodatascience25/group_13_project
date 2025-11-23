@@ -48,6 +48,49 @@ raw_file <- here("data/_raw/preproteins.csv")
 clean_df <- readr::read_csv(raw_file)
 
 ```
+### Additional Data
+Because we refer to it later, we also load data for the properties of the aminoacids
+
+
+TODO -> move the download and extract to utils!
+```{r}
+FORCE_DOWNLOAD <- FALSE
+
+target_url <- "https://www.kaggle.com/api/v1/datasets/download/alejopaullier/aminoacids-physical-and-chemical-properties"
+
+
+dir.create(here("data"), showWarnings = FALSE)
+dir.create(here("data/_raw"), showWarnings = FALSE)
+output_file <- here("data/_raw/aa_properties.zip")
+
+if (!file.exists(file = output_file) || FORCE_DOWNLOAD){
+  curl::curl_download(url = target_url, destfile = output_file)
+} else {
+  cat("[INFO]: File exists, and download was not forced")
+}
+
+```
+
+```{r}
+unzip(zipfile = output_file, exdir = here("data/_raw"))
+
+raw_file <- here("data/_raw/aminoacids.csv")
+
+aa_properties <- readr::read_csv(raw_file)
+aa_properties
+```
+Store the relevant information for us in another file for easy retrieval
+
+```{r}
+aa_weights <- aa_properties |>
+  select(Name, Abbr, Letter, `Molecular Weight`)
+
+readr::write_csv(aa_weights,
+                 here("data/03_aa_weights.csv"))
+
+```
+
+
 
 ### \[SKIP\] Artificial Splitting and dirtying
 

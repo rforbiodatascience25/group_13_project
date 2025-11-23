@@ -1,0 +1,210 @@
+---
+title: "04_analysis"
+format: html
+---
+
+```{r}
+library("tidyverse")
+library("here")
+```
+
+## Load Data
+
+```{r}
+clean_path <- here("data/02_data_clean.csv")
+clean_df <- read_csv(clean_path, show_col_types = FALSE)
+
+clean_df <- clean_df |>
+  select(-aa_ratio_sum)
+
+clean_df
+```
+
+## Correlation Matrix
+
+We want to see how the different numeric variables correlate with each other.
+
+```{r}
+numeric_df <- clean_df |>
+  select(where(is.numeric)) |>
+  select(-starts_with("aa_")) |>
+  select(-matches("ID|id"))
+
+cor_matrix <- cor(numeric_df, use = "pairwise.complete.obs")
+
+cor_long <- cor_matrix |>
+  as.data.frame() |>
+  rownames_to_column(var = "Var1") |>
+  pivot_longer(cols = -Var1, names_to = "Var2", values_to = "Correlation") |>
+  mutate(
+    Var1 = tools::toTitleCase(gsub("_", " ", Var1)),
+    Var2 = tools::toTitleCase(gsub("_", " ", Var2))
+  )
+
+ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Correlation Matrix (Physicochemical Properties)",
+       x = "",
+       y = "")
+```
+
+## Organism Differences
+
+Let's see how these properties vary across different organisms.
+
+```{r}
+
+clean_df |>
+  select(Organism, molecular_weight, gravy, instability_index, length) |>
+  pivot_longer(cols = -Organism, names_to = "Property", values_to = "Value") |>
+  mutate(
+    Property = tools::toTitleCase(gsub("_", " ", Property))
+  ) |>
+  ggplot(aes(x = Organism, y = Value, fill = Organism)) +
+  geom_boxplot() +
+  facet_wrap(~Property, scales = "free_y") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank()) +
+  labs(title = "Physicochemical Properties by Organism")
+
+```
+
+## Linear Model
+
+Lets try a few linear models. for example we expect a strong relationship between protein length and molecular weight.
+
+```{r}
+model <- lm(molecular_weight ~ length, data = clean_df)
+summary(model)
+
+ggplot(clean_df, aes(x = length, y = molecular_weight)) +
+  geom_smooth(method = "lm", color = "red") +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  labs(title = "Molecular Weight vs Length", x ="Length (in amino acids)", y="Molecular Weight",
+       subtitle = paste("R-squared:", round(summary(model)$r.squared, 3)))
+```
+
+Suprise suprise, its basically linear, with 2 **bigger** outliers. lets try and find a reason why they are differing so far from the 1:1
+
+```{r}
+clean_df$outlier_score <- rstandard(model)
+
+outliers <- clean_df |> filter(abs(outlier_score) > 3)
+outliers
+
+```
+```{r}
+outlier_aa <- outliers |>
+  select(Protein_ID, starts_with("aa_"))
+outlier_aa
+```
+
+Lets compare them to the mean
+
+```{r}
+aa_means <- clean_df |>
+  select(starts_with("aa_")) |>
+  summarise(across(everything(), mean))
+
+comparison <- outlier_aa |>
+  mutate(type = "outlier") |>
+  bind_rows(
+    aa_means |> mutate(Protein_ID = "Dataset Mean", type = "mean")
+  )
+
+comparison
+
+```
+```{r}
+outlier_long <- outlier_aa |>
+  pivot_longer(cols = starts_with("aa_"), names_to = "AA", values_to = "Value")
+
+ggplot(outlier_long, aes(x = AA, y = Value, fill = Protein_ID)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  theme_minimal() +
+  labs(title = "Amino Acid Composition of Outlier Proteins",
+       x = "Amino Acid", y = "Proportion")
+```
+
+```{r}
+diff_long <- outliers |>
+  select(Protein_ID, starts_with("aa_")) |>
+  pivot_longer(cols = starts_with("aa_"), names_to = "AA", values_to = "OutlierValue") |>
+  left_join(
+    aa_means |>
+      pivot_longer(cols = everything(), names_to = "AA", values_to = "MeanValue"),
+    by = "AA"
+  ) |>
+  mutate(Difference = OutlierValue - MeanValue)
+
+ggplot(diff_long, aes(x = AA, y = Difference, fill = Difference > 0)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~Protein_ID) +
+  scale_fill_manual(
+    values = c("TRUE" = "seagreen3", "FALSE" = "firebrick3"),
+    labels = c("FALSE" = "Lower than mean", "TRUE" = "Higher than mean"),
+    name = "Deviation"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Amino Acid Composition Deviation from Dataset Mean",
+    x = "Amino Acid",
+    y = "Difference (Outlier − Mean)"
+  )
+
+```
+We can use the aa properties file
+```{r}
+aa_weights <- readr::read_csv(here("data/03_aa_weights.csv"))
+
+aa_weights |>
+  ggplot(aes(x = reorder(Name, `Molecular Weight`),
+             y = `Molecular Weight`)) +
+  scale_fill_gradient(low = "lightblue", high = "darkblue") +
+  geom_col(aes(fill = `Molecular Weight`), alpha=0.9) +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    title = "Amino Acid Molecular Weights",
+    x = "Amino Acid",
+    y = "Molecular Weight"
+  )
+
+```
+
+```{r}
+comp_long <- clean_df |> 
+  select(Protein_ID, starts_with("aa_")) |> 
+  pivot_longer(cols = starts_with("aa_"), names_to = "AA_col", values_to = "Prop") |>
+  mutate(
+    AA = str_remove(AA_col, "aa_")
+  )
+
+#Merge weights
+comp_long2 <- comp_long |> 
+  left_join(aa_weights, by = c("AA" = "Letter")) 
+
+comp_long2 <- comp_long2 |> 
+  mutate(Weight_contrib = Prop * `Molecular Weight`)
+
+comp_long2
+
+```
+```{r}
+outliers <- clean_df |> filter(abs(rstandard(model)) > 3)
+
+outlier_comp <- comp_long2 |> filter(Protein_ID %in% outliers$Protein_ID)
+
+ggplot(outlier_comp, aes(x = AA, y = Weight_contrib, fill = Protein_ID)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  labs(title = "AA Weight-Contribution by Outlier Protein",
+       x = "Amino Acid", y = "Proportion × Weight (g/mol)") #× 
+```
+
