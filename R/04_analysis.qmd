@@ -35,7 +35,9 @@ cor_matrix <- cor(numeric_df, use = "pairwise.complete.obs")
 cor_long <- cor_matrix |>
   as.data.frame() |>
   rownames_to_column(var = "Var1") |>
-  pivot_longer(cols = -Var1, names_to = "Var2", values_to = "Correlation") |>
+  pivot_longer(cols = -Var1, 
+               names_to = "Var2", 
+               values_to = "Correlation") |>
   mutate(
     Var1 = tools::toTitleCase(gsub("_", " ", Var1)),
     Var2 = tools::toTitleCase(gsub("_", " ", Var2))
@@ -91,12 +93,14 @@ ggplot(clean_df, aes(x = length, y = molecular_weight)) +
 Suprise suprise, its basically linear, with 2 **bigger** outliers. lets try and find a reason why they are differing so far from the 1:1
 
 ```{r}
-clean_df$outlier_score <- rstandard(model)
+clean_df <- clean_df |> 
+  mutate(outlier_score = rstandard(model))
 
 outliers <- clean_df |> filter(abs(outlier_score) > 3)
 outliers
 
 ```
+
 ```{r}
 outlier_aa <- outliers |>
   select(Protein_ID, starts_with("aa_"))
@@ -119,11 +123,16 @@ comparison <- outlier_aa |>
 comparison
 
 ```
+
 ```{r}
 outlier_long <- outlier_aa |>
-  pivot_longer(cols = starts_with("aa_"), names_to = "AA", values_to = "Value")
+  pivot_longer(cols = starts_with("aa_"), 
+               names_to = "AA", 
+               values_to = "Value")
 
-ggplot(outlier_long, aes(x = AA, y = Value, fill = Protein_ID)) +
+ggplot(outlier_long, aes(x = AA, 
+                         y = Value, 
+                         fill = Protein_ID)) +
   geom_col(position = "dodge") +
   coord_flip() +
   theme_minimal() +
@@ -134,15 +143,21 @@ ggplot(outlier_long, aes(x = AA, y = Value, fill = Protein_ID)) +
 ```{r}
 diff_long <- outliers |>
   select(Protein_ID, starts_with("aa_")) |>
-  pivot_longer(cols = starts_with("aa_"), names_to = "AA", values_to = "OutlierValue") |>
+  pivot_longer(cols = starts_with("aa_"), 
+               names_to = "AA", 
+               values_to = "OutlierValue") |>
   left_join(
     aa_means |>
-      pivot_longer(cols = everything(), names_to = "AA", values_to = "MeanValue"),
+      pivot_longer(cols = everything(), 
+                   names_to = "AA", 
+                   values_to = "MeanValue"),
     by = "AA"
   ) |>
   mutate(Difference = OutlierValue - MeanValue)
 
-ggplot(diff_long, aes(x = AA, y = Difference, fill = Difference > 0)) +
+ggplot(diff_long, aes(x = AA, 
+                      y = Difference, 
+                      fill = Difference > 0)) +
   geom_col() +
   coord_flip() +
   facet_wrap(~Protein_ID) +
@@ -159,7 +174,9 @@ ggplot(diff_long, aes(x = AA, y = Difference, fill = Difference > 0)) +
   )
 
 ```
+
 We can use the aa properties file
+
 ```{r}
 aa_weights <- readr::read_csv(here("data/03_aa_weights.csv"))
 
@@ -181,14 +198,17 @@ aa_weights |>
 ```{r}
 comp_long <- clean_df |> 
   select(Protein_ID, starts_with("aa_")) |> 
-  pivot_longer(cols = starts_with("aa_"), names_to = "AA_col", values_to = "Prop") |>
+  pivot_longer(cols = starts_with("aa_"), 
+               names_to = "AA_col", 
+               values_to = "Prop") |>
   mutate(
     AA = str_remove(AA_col, "aa_")
   )
 
 #Merge weights
 comp_long2 <- comp_long |> 
-  left_join(aa_weights, by = c("AA" = "Letter")) 
+  left_join(aa_weights, 
+            by = c("AA" = "Letter")) 
 
 comp_long2 <- comp_long2 |> 
   mutate(Weight_contrib = Prop * `Molecular Weight`)
@@ -196,15 +216,20 @@ comp_long2 <- comp_long2 |>
 comp_long2
 
 ```
+
 ```{r}
-outliers <- clean_df |> filter(abs(rstandard(model)) > 3)
+outliers <- clean_df |> 
+  filter(abs(rstandard(model)) > 3)
 
-outlier_comp <- comp_long2 |> filter(Protein_ID %in% outliers$Protein_ID)
+outlier_comp <- comp_long2 |> 
+  filter(Protein_ID %in% outliers$Protein_ID)
 
-ggplot(outlier_comp, aes(x = AA, y = Weight_contrib, fill = Protein_ID)) +
+ggplot(outlier_comp, aes(x = AA, 
+                         y = Weight_contrib, 
+                         fill = Protein_ID)) +
   geom_col(position = "dodge") +
   coord_flip() +
   labs(title = "AA Weight-Contribution by Outlier Protein",
-       x = "Amino Acid", y = "Proportion × Weight (g/mol)") #× 
+       x = "Amino Acid", 
+       y = "Proportion × Weight (g/mol)") #× 
 ```
-
