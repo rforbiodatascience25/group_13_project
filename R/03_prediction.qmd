@@ -49,7 +49,7 @@ clean_classed_df <- clean_df |>
 )
 
 
-meta_classed_df |> count(Receptor_class)
+clean_classed_df |> count(Receptor_class)
 clean_classed_df
 ```
 
@@ -68,7 +68,7 @@ Before modeling, let's visualize the data using PCA to see if the classes separa
 split it into training and test:
 
 ```{r}
-pca_rec <- recipe(~., data = joined_classed_df) |>
+pca_rec <- recipe(~., data = prediction_df) |>
   update_role(Protein_ID, Receptor_class, new_role = "id") |>
   step_normalize(all_predictors()) |>
   step_pca(all_predictors())
@@ -118,6 +118,7 @@ Fit the model:
 
 ```{r}
 fit_simple <- wf_simple |> last_fit(split)
+metrics <- collect_metrics(fit_simple)
 ```
 
 ## Model Evaluation
@@ -177,6 +178,8 @@ conf_mat_res <- collect_predictions(fit_simple) |>
 
 
 conf_df <- as.data.frame(conf_mat_res$table)
+
+
 
 ggplot(conf_df, aes(x = Truth, y = Prediction, fill = Freq)) +
   geom_tile(alpha = 0.8) +
