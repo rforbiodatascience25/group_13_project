@@ -34,14 +34,20 @@ clean_df
 Defining classes. Based on knowledge provided by Ákos, we will split the receptors into 3 classes: Glutamate, Cys-loop and Other receptors (which includes 2 ionotropic receptors not part of the other 2 superfamilies).
 
 ```{r}
-clean_classed_df <- clean_df |> 
-    mutate(
-      Receptor_class = case_when(
-          str_detect(Protein_Name, "Glutamate") ~ "Glutamate",
-          str_detect(Protein_Name, "Ionotropic")  ~ "Other",
-          TRUE       ~ "CysLoop"
-  )
+clean_classed_df <- clean_df |>
+  mutate(
+    Receptor_class = case_when(
+      str_detect(Protein_Name, regex("glutamate", ignore_case = TRUE)) ~ 
+        "Ionotropic glutamate receptor",
+
+      str_detect(Protein_Name, regex("^Ionotropic receptor", ignore_case = TRUE)) ~
+        "Other ionotropic receptor",
+
+      TRUE ~ 
+        "Cys-loop receptor"
+    )
 )
+
 
 meta_classed_df |> count(Receptor_class)
 clean_classed_df
@@ -186,7 +192,6 @@ Which amino acids are most important for distinguishing the classes?
 
 We use the **Mean Decrease Gini** as a measure of importance. It represents the total decrease in node inpurity (Gini impurity) that results from splitting on a given variable, averaged over all trees. A higher value indicates that the variable is more important for classification.
 
-
 ```{r}
 final_fitted <- fit_simple$.workflow[[1]] |> extract_fit_parsnip()
 
@@ -210,4 +215,3 @@ ggplot(importance_df, aes(x = reorder(Variable, Importance), y = Importance)) +
 ```
 
 Note: I love ggplot, it looks so good ahhhhh
-
