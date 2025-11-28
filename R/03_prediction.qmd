@@ -65,7 +65,6 @@ prediction_df
 
 Before modeling, let's visualize the data using PCA to see if the classes separate well based on amino acid composition.
 
-split it into training and test:
 
 ```{r}
 pca_rec <- recipe(~., data = prediction_df) |>
@@ -81,6 +80,10 @@ ggplot(pca_juiced, aes(PC1, PC2, color = Receptor_class)) +
   labs(title = "PCA of Receptor Classes based on AA Composition",
        color = "Receptor Class") +
   theme_minimal()
+```
+```{r}
+#ggsave(here("results/figures/pca_plot.svg"), width = 7, height = 5) #<- Note: higher quality but needs `svglite`
+ggsave(here("results/figures/pca_plot.png"), width = 7, height = 5)
 ```
 
 ## Model Training
@@ -188,6 +191,10 @@ ggplot(conf_df, aes(x = Truth, y = Prediction, fill = Freq)) +
   labs(title = "Confusion Matrix", x = "True Class", y = "Predicted Class") +
   theme_minimal()
 ```
+```{r}
+#ggsave(here("results/figures/confusion_matrix_plot.svg"), width = 7, height = 5) #<- Note: higher quality but needs `svglite`
+ggsave(here("results/figures/confusion_matrix_plot.png"), width = 7, height = 5)
+```
 
 ### Variable Importance
 
@@ -216,5 +223,10 @@ ggplot(importance_df, aes(x = reorder(Variable, Importance), y = Importance)) +
        y = "Importance (Mean Decrease Gini)") +
   theme_minimal()
 ```
+```{r}
+#ggsave(here("results/figures/aa_importance_plot.svg"), width = 7, height = 5) #<- Note: higher quality but needs `svglite`
+ggsave(here("results/figures/aa_importance_plot.png"), width = 7, height = 5)
+```
+
 
 Note: I love ggplot, it looks so good ahhhhh

@@ -1,25 +1,50 @@
 ---
-title: "presentation"
+title: "Analyzing Neurotransmitter Receptors & Protein Sequences"
+author: Ákos Kimpián, Joshua Lembeck, Elvin Kalinowski, Mikel Garcia Amez, Marcel Skumantz
+date: 02-12-2025
 format: revealjs
 editor: visual
 embed-resources: true
 ---
 
-## Quarto
+# Introduction
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+-   @Mikel add information here
 
-## Bullets
+## Data Set info
 
-When you click the **Render** button a document will be generated that includes:
+## Channels
 
--   Content authored with markdown
--   Output from executable code
+# Material & Methods
 
-## Code
+```         
+- Dirtying + Cleaning
+- EDA
+- PCA
+- Prediction —> model setup + (parameters?)
+```
 
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+# Results
 
-```{r}
-1 + 1
+## Correlations heatmap
+
+## Random Forest
+
+::::: columns
+::: {.column width="50%"}
+![Alt text](../results/figures/confusion_matrix_plot.png)
+:::
+
+::: {.column width="50%"}
+![AA Importance plot](../results/figures/aa_importance_plot.png)
+:::
+:::::
+
+Accuracy
+
+# Discussion
+```         
+- Success of the analysis?
+- What could be explored more in detail
+- Role of the AAs for specific structural characteristics
 ```

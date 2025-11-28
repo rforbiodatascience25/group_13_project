@@ -5,3 +5,7 @@
 data
 _raw
 /.quarto/
+
+results/doc
+results/results
+results/R
