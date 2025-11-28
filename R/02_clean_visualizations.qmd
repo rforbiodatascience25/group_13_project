@@ -21,11 +21,26 @@ nt_feat_path <- here("data/01_dat_feature_load.csv")
 
 ntm_dirty <- read_csv(nt_meta_path, show_col_types = FALSE)
 ntf_dirty <- read_csv(nt_feat_path, show_col_types = FALSE)
+
 ```
+
+## Exploratory data analysis
+
+We have two datasets. They describe proteins that are receptors or part of receptors. The metadata describes function, protein names and IDs, organism and sequence of the protein. The feature data contains information on length, molecular weight, secondary structure features and ratio of each amino acid.
+
+```{r}
+dim(ntf_dirty)
+```
+
+```{r}
+dim(ntm_dirty)
+```
+
+We have information on 63 proteins and both datasets seem to contain information on the same number of proteins.
 
 ## Metadata
 
-First we remove unwanted columns from Metadata.
+First we remove unwanted, empty columns from Metadata.
 
 ```{r}
 ntm_dirty <- ntm_dirty |> select(-"3D_Structure_URL", 
@@ -48,15 +63,24 @@ ntm_dirty |>
 
 We can see multiple species commonly used in molecular biology research, with the most proteins coming from Homo sapiens, some Rattus species, Caenorhabditis elegans and some Aspergillus species. However, we also notice that there is a species called Homo_ERR, which should probably be converted to Homo in the cleaning process.
 
+```{r}
+ntm_dirty |>
+  mutate(length = str_length(Sequence)) |>
+  ggplot(aes(x = length)) +
+  geom_histogram(alpha = 0.5,
+                 color = "black") +
+  theme_minimal() +
+  labs(
+    x = "Sequence lengths",
+    y = "Counts",
+    title = "Histogram of Sequence Lengths"
+  )
+```
+
 ## Neurotransmitter features
 
 ```{r}
-ntf_dirty |> head()
-ntf_aa <- ntf_dirty |>  select(starts_with("aa_"))
-ntf_rest <- ntf_dirty |>  select(-starts_with("aa_"))
 
-ntf_aa |> head()
-ntf_rest |> head()
 ```
 
 ## Merge datasets
@@ -92,7 +116,7 @@ sum(is.na(dirty_combined))
 
 From this we can tell that our dataset only contains one NA value.
 
-However, we know that some of the string values have an '\_ERR' attached. We should also check how many of those exist.
+However, we know that some of the string values have an '\_ERR' attached, to signify missing values. We should also check how many of those exist.
 
 ```{r}
 dirty_combined |>
@@ -105,7 +129,38 @@ dirty_combined |>
   )
 ```
 
-So in all character columns there are 1-4 values that are marked as error values.
+```{r}
+dirty_combined |>
+  select(where(is.character)) |>
+  mutate(row_id = row_number()) |>
+  pivot_longer(
+    cols = -row_id,
+    names_to = "variable",
+    values_to = "value"
+  ) |>
+  mutate(missing = str_ends(value, "_ERR"),
+          missing = if_else(is.na(missing), TRUE, missing)
+  ) |>
+  ggplot(aes(x = variable, y = row_id, fill = missing)) +
+  geom_tile() +
+  scale_fill_manual(
+    name = element_blank(),
+    values = c("TRUE" = "red", "FALSE" = "gray"),
+    labels = c("Present", "Missing")
+  ) +
+  labs(title = "Missingness Matrix") +
+  theme_minimal() +
+  theme(
+    axis.title = element_blank(),
+    axis.text.y = element_blank(),
+    axis.text.x = element_text(angle = 90, hjust = 1),
+    panel.grid = element_blank()
+  )
+```
+
+So in all character columns there are 1-4 values that are marked as error values. From the missingness matrix there seem to be no features with particularly high missingness and missingness appears to be random, meaning there are no obvious batch effects or other confounders influencing missingness.
+
+Next, we analyze outliers in our numeric data.
 
 ```{r}
 dirty_combined |>
@@ -118,6 +173,10 @@ dirty_combined |>
   theme_bw() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1)
+  ) +
+  labs(
+    x = "All numeric variables",
+    title = "Boxplots of each numeric variable"
   )
 ```
 
@@ -167,6 +226,7 @@ cleaner_combined <- cleaner_combined |>
 ```
 
 Fixing the amino acid ratios is simple: we can simple recalculate the ratios from the sequence. Afterwards we can check if we did a good job by adding the ratios together and seeing whether they add up to 1.
+
 ```{r}
 aas <- c("A","C","D","E","F","G","H","I","K","L","M","N","P","Q","R","S","T","V","W","Y")
 
@@ -190,9 +250,11 @@ cleaner_combined <- cleaner_combined |>
 cleaner_combined |> 
   distinct(aa_ratio_sum)
 ```
+
 They do add up to one in every case, so it is likely that we managed to fix all the amino acid ratio values.
 
 We can look at the boxplots again:
+
 ```{r}
 cleaner_combined |>
   select(where(is.numeric)) |>
@@ -202,7 +264,6 @@ cleaner_combined |>
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
-cleaner_combined |> head()
 ```
 
 As is visible, the outliers have been successfully dealt with.
