@@ -151,42 +151,7 @@ ggplot(outlier_long, aes(x = AA,
        x = "Amino Acid", y = "Proportion")
 ```
 
-```{r}
-diff_long <- outliers |>
-  select(Protein_ID, starts_with("aa_")) |>
-  pivot_longer(cols = starts_with("aa_"), 
-               names_to = "AA", 
-               values_to = "OutlierValue") |>
-  left_join(
-    aa_means |>
-      pivot_longer(cols = everything(), 
-                   names_to = "AA", 
-                   values_to = "MeanValue"),
-    by = "AA"
-  ) |>
-  mutate(Difference = OutlierValue - MeanValue)
 
-ggplot(diff_long, aes(x = AA, 
-                      y = Difference, 
-                      fill = Difference > 0)) +
-  geom_col() +
-  coord_flip() +
-  facet_wrap(~Protein_ID) +
-  scale_fill_manual(
-    values = c("TRUE" = "seagreen3", "FALSE" = "firebrick3"),
-    labels = c("FALSE" = "Lower than mean", "TRUE" = "Higher than mean"),
-    name = "Deviation"
-  ) +
-  theme_minimal() +
-  labs(
-    title = "Amino Acid Composition Deviation from Dataset Mean",
-    x = "Amino Acid",
-    y = "Difference (Outlier − Mean)"
-  )
-
-ggsave(here("results/figures/outlier_comp_deviation_plot.png"), width = 7, height = 5)
-
-```
 
 We can use the aa properties file
 
@@ -205,6 +170,49 @@ aa_weights |>
     x = "Amino Acid",
     y = "Molecular Weight"
   )
+
+```
+```{r}
+diff_long <- outliers |>
+  select(Protein_ID, starts_with("aa_")) |>
+  pivot_longer(
+    cols = starts_with("aa_"),
+    names_to = "AA",
+    values_to = "OutlierValue"
+  ) |>
+  mutate(AA_Letter = stringr::str_remove(AA, "aa_")) |>
+  left_join(
+    aa_means |>
+      pivot_longer(
+        cols = everything(),
+        names_to = "AA",
+        values_to = "MeanValue"
+      ),
+    by = "AA"
+  ) |>
+  mutate(Difference = OutlierValue - MeanValue) |>
+  left_join(aa_weights, by = c("AA_Letter" = "Letter")) |>
+  select(-AA_Letter, -Name, -Abbr)
+
+ggplot(diff_long, aes(x = reorder(AA, `Molecular Weight`, descending = TRUE),
+                      y = Difference,
+                      fill = Difference > 0)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~Protein_ID) +
+  scale_fill_manual(
+    values = c("TRUE" = "seagreen3", "FALSE" = "firebrick3"),
+    labels = c("FALSE" = "Lower than mean", "TRUE" = "Higher than mean"),
+    name = "Deviation"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "AA Composition Deviation from Dataset Mean (Ordered by AA weight)",
+    x = "Amino Acid",
+    y = "Difference (Outlier − Mean)"
+  )
+
+ggsave(here("results/figures/outlier_comp_deviation_plot.png"), width = 7, height = 5)
 
 ```
 
