@@ -26,23 +26,36 @@ embed-resources: true
 
 # Results
 
-## Correlations heatmap
+## Random Forest
 
 ## Random Forest
 
-::::: columns
-::: {.column width="50%"}
-![Alt text](../results/figures/confusion_matrix_plot.png)
+:::: columns
+::: {.column width="55%"}
+![](../results/figures/metrics_plot.png)
 :::
 
-::: {.column width="50%"}
-![AA Importance plot](../results/figures/aa_importance_plot.png)
+::: {.column width="45%"}
+
+![](../results/figures/aa_importance_plot.png)
+
+![](../results/figures/confusion_matrix_plot.png)
+
 :::
-:::::
+::::
 
-Accuracy
+## Correlations heatmap
 
+:::: columns
+:::{.column width="50%"}
+![](../results/figures/lm_plot.png)
+:::
+:::{.column width="50%"}
+![](../results/figures/outlier_comp_deviation_plot.png)
+:::
+::::
 # Discussion
+
 ```         
 - Success of the analysis?
 - What could be explored more in detail
