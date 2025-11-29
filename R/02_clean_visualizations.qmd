@@ -24,7 +24,7 @@ ntf_dirty <- read_csv(nt_feat_path, show_col_types = FALSE)
 
 ```
 
-## Exploratory data analysis
+## Exploratory data analysis of raw data
 
 We have two datasets. They describe proteins that are receptors or part of receptors. The metadata describes function, protein names and IDs, organism and sequence of the protein. The feature data contains information on length, molecular weight, secondary structure features and ratio of each amino acid.
 
@@ -37,8 +37,6 @@ dim(ntm_dirty)
 ```
 
 We have information on 63 proteins and both datasets seem to contain information on the same number of proteins.
-
-## Metadata
 
 First we remove unwanted, empty columns from Metadata.
 
@@ -63,6 +61,8 @@ ntm_dirty |>
 
 We can see multiple species commonly used in molecular biology research, with the most proteins coming from Homo sapiens, some Rattus species, Caenorhabditis elegans and some Aspergillus species. However, we also notice that there is a species called Homo_ERR, which should probably be converted to Homo in the cleaning process.
 
+We can also visualize the length of our protein sequences.
+
 ```{r}
 ntm_dirty |>
   mutate(length = str_length(Sequence)) |>
@@ -75,12 +75,6 @@ ntm_dirty |>
     y = "Counts",
     title = "Histogram of Sequence Lengths"
   )
-```
-
-## Neurotransmitter features
-
-```{r}
-
 ```
 
 ## Merge datasets
@@ -158,7 +152,7 @@ dirty_combined |>
   )
 ```
 
-So in all character columns there are 1-4 values that are marked as error values. From the missingness matrix there seem to be no features with particularly high missingness and missingness appears to be random, meaning there are no obvious batch effects or other confounders influencing missingness.
+So in all character columns there are 1-4 values that are marked as error values. To create this matrix, we used pivot_longer() to be able to create a column for each variable. From the missingness matrix there seem to be no features with particularly high missingness and missingness appears to be random, meaning there are no obvious batch effects or other confounders influencing missingness.
 
 Next, we analyze outliers in our numeric data.
 
@@ -180,7 +174,7 @@ dirty_combined |>
   )
 ```
 
-To create this graph, we used pivot_longer() to be able to stratify the boxplots on every numeric variable. To make outliers of different variables comparable to one another, values have been log-normalized.
+To make outliers of different variables comparable to one another, values have been log-normalized.
 
 These last steps show all of the impurities that exist in our data, missing values for character data and numerical data, as well as outliers for numerical data. In the following steps we will show how to deal with them.
 
@@ -205,7 +199,7 @@ cleaner_combined |>
   )
 ```
 
-Next, we will deal with the numeric outliers in our data. There is an important distinction with the numerical variables: the ones that start with "aa" reflect the ratio of a given amino acid in the protein sequence. For all other numeric variables, we identify them using the IQR-method that boxplots use as well. Since they are artificial, it gives no biological insight to keep them, so we will impute them using the median-method. We prefer the media-method over the mean-method here, because the latter is much more sensitive to large outliers, which is what we have in our data.
+Next, we will deal with the numeric outliers in our data. For all other numeric variables, we identify them using the IQR-method that boxplots use as well. Since the outliers are artificial, it gives no biological insight to keep them, so we will impute them using the median-method. We prefer the median-method over the mean-method here, because the latter is much more sensitive to large outliers, which is what we have in our data.
 
 ```{r}
 cleaner_combined <- cleaner_combined |>
@@ -225,7 +219,7 @@ cleaner_combined <- cleaner_combined |>
   }))
 ```
 
-Fixing the amino acid ratios is simple: we can simple recalculate the ratios from the sequence. Afterwards we can check if we did a good job by adding the ratios together and seeing whether they add up to 1.
+There is an important distinction between the numerical variables: the ones that start with "aa" reflect the ratio of a given amino acid in the protein sequence. So we can provide an even more precise method of dealing with outliers, that is more accurate than median imputation. We can simple recalculate the ratios from the sequence provided in our metadata.. Afterwards we can check if we did a good job by adding the ratios together and seeing whether they add up to 1.
 
 ```{r}
 aas <- c("A","C","D","E","F","G","H","I","K","L","M","N","P","Q","R","S","T","V","W","Y")
