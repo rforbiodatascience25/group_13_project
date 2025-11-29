@@ -11,6 +11,7 @@ library("tidyverse")
 library("here")
 library("purrr")
 library("stringr")
+#library("SnowballC")
 ```
 
 ## Load data
@@ -60,6 +61,29 @@ ntm_dirty |>
 ```
 
 We can see multiple species commonly used in molecular biology research, with the most proteins coming from Homo sapiens, some Rattus species, Caenorhabditis elegans and some Aspergillus species. However, we also notice that there is a species called Homo_ERR, which should probably be converted to Homo in the cleaning process.
+
+Let's find out if we have some recurring functions. For this, we will count the most frequent words used in the Function column (e.g. "receptor", "serotonin", etc.). This uses the SnowballC package, so don't run unless the package is installed.
+
+```{r}
+# recurring_words <- meta_df |>
+#   mutate(words = str_split(tolower(Function), "[[:space:][:punct:]]+")) |>
+#   unnest(words) |>
+#   filter(words != "") |>
+#   filter(!words %in% c("of","as","a","part","that","the","function", "n", "non", "5")) |>
+#   count(words, sort = TRUE) |>
+#   mutate(relative_freq = n / sum(n))
+# 
+# recurring_words
+# 
+# recurring_words |>
+#   filter(n > 6) |>
+#   ggplot(aes(x = reorder(words, -n), y = n)) +
+#   geom_col() +
+#   theme(axis.text.x = element_text(angle = 70, hjust = 1))
+```
+
+We see that the protein functions like "receptor", "channel", structural information such as "subunit" show up often as well as information on ion usage ("chlorid", "cation", "ionotropic"), or neurotransmitter ("glutamate", "serotonin").
+
 
 We can also visualize the length of our protein sequences.
 
