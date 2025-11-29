@@ -51,6 +51,8 @@ ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation)) +
   labs(title = "Correlation Matrix (Physicochemical Properties)",
        x = "",
        y = "")
+
+ggsave(here("results/figures/correlation_matrix.png"), width = 7, height = 5)
 ```
 
 ## Organism Differences
@@ -85,9 +87,18 @@ summary(model)
 ggplot(clean_df, aes(x = length, y = molecular_weight)) +
   geom_smooth(method = "lm", color = "red") +
   geom_point(alpha = 0.5) +
+  geom_text(
+    data = clean_df |> filter(Protein_ID %in% c("P42260", "Q9C8E7")),
+    aes(label = Protein_ID),
+    vjust = -0.5, 
+    color = "blue",
+    size = 3
+  ) +
   theme_minimal() +
   labs(title = "Molecular Weight vs Length", x ="Length (in amino acids)", y="Molecular Weight",
        subtitle = paste("R-squared:", round(summary(model)$r.squared, 3)))
+
+ggsave(here("results/figures/lm_plot.png"), width = 7, height = 5)
 ```
 
 Suprise suprise, its basically linear, with 2 **bigger** outliers. lets try and find a reason why they are differing so far from the 1:1
@@ -172,6 +183,8 @@ ggplot(diff_long, aes(x = AA,
     x = "Amino Acid",
     y = "Difference (Outlier − Mean)"
   )
+
+ggsave(here("results/figures/outlier_comp_deviation_plot.png"), width = 7, height = 5)
 
 ```
 
