@@ -58,7 +58,10 @@ embed-resources: true
 
 ## Biological Interpretation
 
-- Role of the AAs for specific structural characteristics
+- Receptor classification
+  - Valine, Glycine, Tryptophan, Serine, and Proline are the most informative amino acids for receptor prediction
+  - Proline and Glycine are helix-breakers
+  - 
 
 ## Limitations and Future Directions
 
