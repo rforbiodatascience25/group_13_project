@@ -37,10 +37,12 @@ Defining classes. Based on knowledge provided by Ákos, we will split the recept
 clean_classed_df <- clean_df |>
   mutate(
     Receptor_class = case_when(
-      str_detect(Protein_Name, regex("glutamate", ignore_case = TRUE)) ~ 
+      str_detect(Protein_Name, 
+                 regex("glutamate", ignore_case = TRUE)) ~ 
         "Ionotropic glutamate receptor",
 
-      str_detect(Protein_Name, regex("^Ionotropic receptor", ignore_case = TRUE)) ~
+      str_detect(Protein_Name, 
+                 regex("^Ionotropic receptor", ignore_case = TRUE)) ~
         "Other ionotropic receptor",
 
       TRUE ~ 
@@ -53,7 +55,7 @@ clean_classed_df |> count(Receptor_class)
 clean_classed_df
 ```
 
-Selecting only the relevant column for this predicition
+Selecting only the relevant columns for this predicition
 
 ```{r}
 prediction_df <- clean_classed_df |>
@@ -67,14 +69,17 @@ Before modeling, let's visualize the data using PCA to see if the classes separa
 
 ```{r}
 pca_rec <- recipe(~., data = prediction_df) |>
-  update_role(Protein_ID, Receptor_class, new_role = "id") |>
+  update_role(Protein_ID, Receptor_class, 
+              new_role = "id") |>
   step_normalize(all_predictors()) |>
   step_pca(all_predictors())
 
 pca_prep <- prep(pca_rec)
 pca_juiced <- juice(pca_prep)
 
-ggplot(pca_juiced, aes(PC1, PC2, color = Receptor_class)) +
+ggplot(pca_juiced, aes(PC1, 
+                       PC2, 
+                       color = Receptor_class)) +
   geom_point(alpha = 0.7) +
   labs(title = "PCA of Receptor Classes based on AA Composition",
        color = "Receptor Class") +
@@ -83,7 +88,9 @@ ggplot(pca_juiced, aes(PC1, PC2, color = Receptor_class)) +
 
 ```{r}
 #ggsave(here("results/figures/pca_plot.svg"), width = 7, height = 5) #<- Note: higher quality but needs `svglite`
-ggsave(here("results/figures/pca_plot.png"), width = 7, height = 5)
+ggsave(here("results/figures/pca_plot.png"), 
+       width = 7, 
+       height = 5)
 ```
 
 ## Model Training
@@ -92,7 +99,9 @@ We split the data into training and test sets:
 
 ```{r}
 set.seed(123)
-split  <- initial_split(prediction_df, prop = 0.8, strata = Receptor_class)
+split  <- initial_split(prediction_df, 
+                        prop = 0.8, 
+                        strata = Receptor_class)
 train  <- training(split)
 test   <- testing(split)
 ```
@@ -101,7 +110,8 @@ Define a recipe for the model:
 
 ```{r}
 rec <- recipe(Receptor_class ~ ., data = train) |>
-  update_role(Protein_ID, new_role = "id") |>
+  update_role(Protein_ID, 
+              new_role = "id") |>
   step_normalize(all_predictors())
 ```
 
@@ -151,9 +161,13 @@ metrics2 <- metrics |>
   )
 
 ggplot(metrics2,
-       aes(x = metric_label, y = .estimate, fill = direction)) +
+       aes(x = metric_label, 
+           y = .estimate, 
+           fill = direction)) +
   geom_col(alpha = 0.6) +
-  geom_text(aes(label = estimate_lbl), vjust = -0.5, size = 4) +
+  geom_text(aes(label = estimate_lbl), 
+            vjust = -0.5, 
+            size = 4) +
   scale_fill_manual(
     name = "Interpretation",
     values = c(
@@ -172,7 +186,9 @@ ggplot(metrics2,
 ```
 
 ```{r}
-ggsave(here("results/figures/metrics_plot.png"), width = 7, height = 5)
+ggsave(here("results/figures/metrics_plot.png"), 
+       width = 7, 
+       height = 5)
 ```
 
 ### Confusion Matrix
@@ -185,17 +201,26 @@ conf_mat_res <- collect_predictions(fit_simple) |>
 
 conf_df <- as.data.frame(conf_mat_res$table)
 
-ggplot(conf_df, aes(x = Truth, y = Prediction, fill = Freq)) +
+ggplot(conf_df, aes(x = Truth, 
+                    y = Prediction, 
+                    fill = Freq)) +
   geom_tile(alpha = 0.8) +
-  geom_text(aes(label = Freq), color = "white", size = 5) +
-  scale_fill_gradient(low = "lightblue", high = "darkblue") +
-  labs(title = "Confusion Matrix", x = "True Class", y = "Predicted Class") +
+  geom_text(aes(label = Freq), 
+            color = "white", 
+            size = 5) +
+  scale_fill_gradient(low = "lightblue", 
+                      high = "darkblue") +
+  labs(title = "Confusion Matrix", 
+       x = "True Class", 
+       y = "Predicted Class") +
   theme_minimal()
 ```
 
 ```{r}
 #ggsave(here("results/figures/confusion_matrix_plot.svg"), width = 7, height = 5) #<- Note: higher quality but needs `svglite`
-ggsave(here("results/figures/confusion_matrix_plot.png"), width = 7, height = 5)
+ggsave(here("results/figures/confusion_matrix_plot.png"), 
+       width = 7, 
+       height = 5)
 ```
 
 ### Variable Importance
@@ -213,12 +238,15 @@ importance_df <- data.frame(
   Variable = rownames(importance_matrix),
   Importance = importance_matrix[, "MeanDecreaseGini"]
 ) |>
-  mutate(Variable = str_remove(Variable, "aa_")) |> #Remove 'aa_' prefix
+  mutate(Variable = str_remove(Variable, "aa_")) |> 
   arrange(desc(Importance))
 
-ggplot(importance_df, aes(x = reorder(Variable, Importance), y = Importance)) +
-  geom_col(aes(fill = Importance), alpha=0.9) +
-  scale_fill_gradient(low = "lightblue", high = "darkblue") +
+ggplot(importance_df, aes(x = reorder(Variable, Importance), 
+                          y = Importance)) +
+  geom_col(aes(fill = Importance), 
+           alpha=0.9) +
+  scale_fill_gradient(low = "lightblue", 
+                      high = "darkblue") +
   coord_flip() +
   labs(title = "Amino Acids by Importance",
        x = "Amino Acid",
@@ -228,7 +256,7 @@ ggplot(importance_df, aes(x = reorder(Variable, Importance), y = Importance)) +
 
 ```{r}
 #ggsave(here("results/figures/aa_importance_plot.svg"), width = 7, height = 5) #<- Note: higher quality but needs `svglite`
-ggsave(here("results/figures/aa_importance_plot.png"), width = 7, height = 5)
+ggsave(here("results/figures/aa_importance_plot.png"), 
+       width = 7, 
+       height = 5)
 ```
-
-Note: I love ggplot, it looks so good ahhhhh
