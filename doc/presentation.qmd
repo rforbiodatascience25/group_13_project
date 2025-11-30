@@ -54,10 +54,13 @@ embed-resources: true
 ![](../results/figures/outlier_comp_deviation_plot.png)
 :::
 ::::
-# Discussion
+# Discussion (Joshua)
 
-```         
+## Biological Interpretation
+
+- Role of the AAs for specific structural characteristics
+
+## Limitations and Future Directions
+
 - Success of the analysis?
 - What could be explored more in detail
-- Role of the AAs for specific structural characteristics
-```
