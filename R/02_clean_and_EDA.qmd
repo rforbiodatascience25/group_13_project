@@ -84,7 +84,6 @@ Let's find out if we have some recurring functions. For this, we will count the 
 
 We see that the protein functions like "receptor", "channel", structural information such as "subunit" show up often as well as information on ion usage ("chlorid", "cation", "ionotropic"), or neurotransmitter ("glutamate", "serotonin").
 
-
 We can also visualize the length of our protein sequences.
 
 ```{r}
@@ -157,21 +156,27 @@ dirty_combined |>
     values_to = "value"
   ) |>
   mutate(missing = str_ends(value, "_ERR"),
-          missing = if_else(is.na(missing), TRUE, missing)
+          missing = if_else(is.na(missing), 
+                            TRUE, 
+                            missing)
   ) |>
-  ggplot(aes(x = variable, y = row_id, fill = missing)) +
-  geom_tile() +
+  ggplot(aes(x = variable,
+             y = row_id, 
+             fill = missing)) +
+  geom_tile(color = "gray80",
+            linewidth = 0.15) +
   scale_fill_manual(
     name = element_blank(),
-    values = c("TRUE" = "red", "FALSE" = "gray"),
-    labels = c("Present", "Missing")
+    values = c("TRUE" = "red", 
+               "FALSE" = "gray"),
+    labels = c("Present",
+               "Missing")
   ) +
   labs(title = "Missingness Matrix") +
   theme_minimal() +
   theme(
     axis.title = element_blank(),
     axis.text.y = element_blank(),
-    axis.text.x = element_text(angle = 90, hjust = 1),
     panel.grid = element_blank()
   )
 ```
@@ -196,6 +201,7 @@ dirty_combined |>
     x = "All numeric variables",
     title = "Boxplots of each numeric variable"
   )
+
 ```
 
 To make outliers of different variables comparable to one another, values have been log-normalized.
@@ -209,7 +215,8 @@ First we will start with cleaning string data by removing the "\_ERR" at the end
 ```{r}
 cleaner_combined <- dirty_combined |>
   mutate(across(where(is.character),
-                ~ str_remove(.x, "_ERR$" )))
+                ~ str_remove(.x, 
+                             "_ERR$" )))
 ```
 
 ```{r}
@@ -218,7 +225,9 @@ cleaner_combined |>
   summarise(
     across(
       .cols = everything(),
-      .fns = ~sum(str_ends(.x, '_ERR'), na.rm = TRUE)
+      .fns = ~sum(str_ends(.x, 
+                           '_ERR'), 
+                  na.rm = TRUE)
     )
   )
 ```
@@ -228,14 +237,20 @@ Next, we will deal with the numeric outliers in our data. For all other numeric 
 ```{r}
 cleaner_combined <- cleaner_combined |>
   mutate(across(where(is.numeric) & !starts_with("aa"), ~ {
-       Q1  <- quantile(.x, 0.25, na.rm = TRUE)
-       Q3  <- quantile(.x, 0.75, na.rm = TRUE)
-       IQR_value <- IQR(.x, na.rm = TRUE)
+       Q1  <- quantile(.x, 
+                       0.25, 
+                       na.rm = TRUE)
+       Q3  <- quantile(.x, 
+                       0.75, 
+                       na.rm = TRUE)
+       IQR_value <- IQR(.x, 
+                        na.rm = TRUE)
        
        lower_fence <- Q1 - 1.5 * IQR_value
        upper_fence <- Q3 + 1.5 * IQR_value
        
-       mean_val <- median(.x, na.rm = TRUE)
+       mean_val <- median(.x, 
+                          na.rm = TRUE)
        
        ifelse(.x < lower_fence | .x > upper_fence,
               mean_val,
@@ -254,7 +269,9 @@ seq_len <- cleaner_combined |>
 
 count_mat <- cleaner_combined |>
   pull(Sequence) |>
-  (\(seqs) sapply(aas, \(a) str_count(seqs, a)))()
+  (\(seqs) sapply(aas, 
+                  \(a) str_count(seqs, 
+                                 a)))()
 
 ratio_mat <- count_mat / seq_len
 
@@ -276,11 +293,15 @@ We can look at the boxplots again:
 ```{r}
 cleaner_combined |>
   select(where(is.numeric)) |>
-  pivot_longer(everything(), names_to = "variable", values_to = "value") |>
-  ggplot(aes(x = variable, y = log(value))) +
+  pivot_longer(everything(), 
+               names_to = "variable", 
+               values_to = "value") |>
+  ggplot(aes(x = variable, 
+             y = log(value))) +
   geom_boxplot() +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1)
+    axis.text.x = element_text(angle = 45, 
+                               hjust = 1)
   )
 ```
 
