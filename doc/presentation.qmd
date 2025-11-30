@@ -26,25 +26,19 @@ embed-resources: true
 
 # Results
 
-## Random Forest
+## Results of receptor family classification
 
-## Random Forest
-
-:::: columns
-::: {.column width="55%"}
+::::: columns
+::: {.column width="50%"}
 ![](../results/figures/metrics_plot.png)
 :::
 
-::: {.column width="45%"}
-
+::: {.column width="50%"}
 ![](../results/figures/aa_importance_plot.png)
-
-![](../results/figures/confusion_matrix_plot.png)
-
 :::
-::::
+:::::
 
-## Correlations heatmap
+## Length and weight correlation analysis
 
 :::: columns
 :::{.column width="50%"}
@@ -54,6 +48,7 @@ embed-resources: true
 ![](../results/figures/outlier_comp_deviation_plot.png)
 :::
 ::::
+
 # Discussion (Joshua)
 
 ## Biological Interpretation
