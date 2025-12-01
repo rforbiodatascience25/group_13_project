@@ -124,9 +124,7 @@ rf_spec <- rand_forest(trees = 1000) |>
 :::
 :::::
 
-# Results
-
-## PCA and classification results
+## Results: PCA and classification results
 
 ::::: columns
 ::: {.column width="50%"}
@@ -138,7 +136,7 @@ rf_spec <- rand_forest(trees = 1000) |>
 :::
 :::::
 
-## Length and weight correlation analysis
+## Results: Length and weight correlation analysis
 
 ::::: columns
 ::: {.column width="50%"}
@@ -150,39 +148,43 @@ rf_spec <- rand_forest(trees = 1000) |>
 :::
 :::::
 
-# Discussion
+## Discussion: Biological Interpretation
 
-## Biological Interpretation
-
-::::: columns
-::: {.column width="45%"}
+:::: {.columns style="font-size:60%; margin-bottom:-2rem;"}
+::: {.column width="100%"}
 -   Valine, Glycine, Tryptophan, Serine, and Proline are most discriminative
     -   Valine is common in sheets
     -   Glycine, Serine and Proline common in turns and coils
-    -   Cys-loop receptors contain aromatic cage in ligand binding domain
+    -   Cys-loop receptors contain aromatic cage in ligand binding domain (Tryptophan)
 -   However, feature importance should be interpreted cautiously
 :::
+::::
 
-::: {.column width="55%"}
-![](../results/figures/aa_importance_plot.png)
-:::
-:::::
-
-::::: columns
-::: {.column width="50%"}
-![](../results/figures/Sysloop.png)
+:::::: {.columns style="font-size:30%; margin-top:-4rem;"}
+::: {.column width="49%"}
+![](../results/figures/aa_importance_plot.png){width="95%"}
 :::
 
-::: {.column width="50%"}
-![](../results/figures/iGluR.png)
+::: {.column width="23%"}
+![](../results/figures/Sysloop.png){width="95%"}
+Sys-loop Receptor
 :::
-:::::
 
-## Limitations and Future Directions
+::: {.column width="28%"}
+![](../results/figures/iGluR.png){width="95%"}
+Ionotropic Glutamate Receptor
+:::
+::::::
 
--   Success of the analysis?
+## Discussion: Limitations and Future Directions
+
+:::: {.columns style="font-size:60%; margin-bottom:-2rem;"}
+::: {.column width="100%"}
+-   It is possible to distinguish receptor types just from the amino acid composition
     -   prediction of Cys-loop and Glutamate ion receptors very accurate
     -   other receptors are not well predicted due to lack of representation in the data set
-    -   
--   What could be explored more in detail
-    -   test model against larger variety of background proteins
+-   Things that could be pursued in more detail:
+    -   train a model against larger variety of background proteins
+    -   add AA sequence data to gain insight into structural features for more precise prediction
+:::
+::::
