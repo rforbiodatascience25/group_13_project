@@ -1,4 +1,3 @@
-
 ---
 title: "Analyzing Neurotransmitter Receptors & Protein Sequences"
 author: Ákos Kimpián, Joshua Lembeck, Elvin Kalinowski, Mikel Garcia Amez, Marcel Skumantz
@@ -33,7 +32,6 @@ embed-resources: true
 :::
 ::::
 
-
 ## More data
 
 ::::: columns
@@ -46,29 +44,27 @@ embed-resources: true
 :::
 :::::
 
-
 ## EDA
-
 
 ## Prediction preprocessing
 
-- AA composition variables (`aa_*`) as features
-- Receptor classes using pattern-based annotation of `Protein_Name` as target
-    - Cys-loop receptors
-    - Ionotropic glutamate receptors
-    - Other ionotropic receptors
+-   AA composition variables (`aa_*`) as features
+-   Receptor classes using pattern-based annotation of `Protein_Name` as target
+    -   Cys-loop receptors
+    -   Ionotropic glutamate receptors
+    -   Other ionotropic receptors
 
 ## PCA
 
 ::::: columns
 ::: {.column width="50%"}
-- Examine structure before modelling
-- using tidymodels
-- PC1 <-> PC2 scatter
+-   Examine structure before modelling
+-   using tidymodels
+-   PC1 \<-\> PC2 scatter
 :::
 
 ::: {.column width="50%"}
-```r
+``` r
 #...
 pca_rec <- recipe(~., data = prediction_df) |>
   update_role(Protein_ID, Receptor_class, 
@@ -80,20 +76,17 @@ pca_rec <- recipe(~., data = prediction_df) |>
 :::
 :::::
 
-
-
 ## Predictive Modeling
 
 ::::: columns
 ::: {.column width="50%"}
-- Stratified $80$/$20$ train–test split to maintain class balance
-- Random Forest classifier with $1000$ trees
-- Basic Metrics and Mean Decrease Gini (MDG) as feature importance
+-   Stratified $80$/$20$ train–test split to maintain class balance
+-   Random Forest classifier with $1000$ trees
+-   Basic Metrics and Mean Decrease Gini (MDG) as feature importance
 :::
 
-
 ::: {.column width="50%"}
-```r
+``` r
 #...
 pca_rec <- recipe(~., data = prediction_df) |>
   update_role(Protein_ID, Receptor_class, 
@@ -108,9 +101,6 @@ rf_spec <- rand_forest(trees = 1000) |>
 :::
 :::::
 
-
-
-
 # Results
 
 ## Correlation Matrix
@@ -118,17 +108,16 @@ rf_spec <- rand_forest(trees = 1000) |>
 ::: {.column width="80%"}
 ![](../results/figures/correlation_matrix.png)
 :::
-:::::
 
+:::::
 
 ## PCA
 
 ::: {.column width="80%"}
 ![](../results/figures/pca_plot.png)
 :::
+
 :::::
-
-
 
 ## Results of receptor family classification
 
@@ -158,16 +147,19 @@ rf_spec <- rand_forest(trees = 1000) |>
 
 ## Biological Interpretation
 
-- Receptor classification
-  - Valine, Glycine, Tryptophan, Serine, and Proline are the most discriminative amino acids for receptor prediction
-  - Proline and Glycine are alpha-helix and beta-sheet breakers
-  - Proline is highly relevant for loops and turns
+-   Receptor classification
+
+    -   Valine, Glycine, Tryptophan, Serine, and Proline are the most discriminative amino acids for receptor prediction
+
+    -   Proline and Glycine are alpha-helix and beta-sheet breakers
+
+    -   Proline is highly relevant for loops and turns
 
 ## Limitations and Future Directions
 
-- Success of the analysis?
-  - prediction of Cys-loop and Glutamate ion receptors very accurate
-  - other receptors are not well predicted due to lack of representation in the data set
-  - 
-- What could be explored more in detail
-  - test model against larger variety of background proteins
+-   Success of the analysis?
+    -   prediction of Cys-loop and Glutamate ion receptors very accurate
+    -   other receptors are not well predicted due to lack of representation in the data set
+    -   
+-   What could be explored more in detail
+    -   test model against larger variety of background proteins
