@@ -260,3 +260,14 @@ ggsave(here("results/figures/aa_importance_plot.png"),
        width = 7, 
        height = 5)
 ```
+
+Look at the most discriminative aminoacids and see if they predominate in one of the two receptor classes.
+
+```{r}
+prediction_df |> 
+  group_by(Receptor_class) |> 
+  summarise(across(starts_with("aa_"), median)) |> 
+  select(Receptor_class, aa_V, aa_G, aa_W, aa_S, aa_P, aa_Q, aa_C) |> 
+  filter(Receptor_class != "Other ionotropic receptor")
+
+```
