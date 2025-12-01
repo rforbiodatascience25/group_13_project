@@ -26,44 +26,44 @@ embed-resources: true
 
 ## Dirtying -- Cleaning
 
-
-::: {.columns}
+::::: columns
 ::: {.column width="25%"}
-1. Split data
+1.  Split data
 :::
+
 ::: {.column width="75%"}
 Combine via .row_id
 :::
-:::
+:::::
 
-
-::: {.columns}
+:::::: columns
 ::: {.column width="25%"}
-2. Insert missing values
+2.  Insert missing values
 :::
+
 ::: {.column width="37%"}
 ![](../results/figures/missingness_matrix.png)
 :::
+
 ::: {.column width="37%"}
-- Random missingness
-- Imputation sensible
+-   Random missingness
+-   Imputation sensible
 :::
-:::
+::::::
 
-
-::: {.columns}
+:::::: columns
 ::: {.column width="25%"}
-3. Insert outliers
+3.  Insert outliers
 :::
+
 ::: {.column width="37%"}
 ![](../results/figures/boxplots_outliers_dirty.png)
 :::
+
 ::: {.column width="37%"}
 ![](../results/figures/boxplots_outliers_clean.png)
 :::
-:::
-
-
+::::::
 
 ## EDA
 
@@ -124,19 +124,17 @@ rf_spec <- rand_forest(trees = 1000) |>
 
 # Results
 
-
 ## PCA and classification results
 
 ::::: columns
-
 ::: {.column width="50%"}
 ![](../results/figures/pca_plot.png)
 :::
+
 ::: {.column width="50%"}
 ![](../results/figures/metrics_plot.png)
 :::
 :::::
-
 
 ## Length and weight correlation analysis
 
@@ -150,26 +148,33 @@ rf_spec <- rand_forest(trees = 1000) |>
 :::
 :::::
 
-# Discussion (Joshua)
+# Discussion
 
 ## Biological Interpretation
 
-:::: columns
+::::: columns
 ::: {.column width="45%"}
-
-
-- Valine, Glycine, Tryptophan, Serine, and Proline are most discriminative
-- Proline and Glycine disrupt α-helices and β-sheets
-- Proline is dominant in loops and turns
-
+-   Valine, Glycine, Tryptophan, Serine, and Proline are most discriminative
+    -   Valine is common in sheets
+    -   Glycine, Serine and Proline common in turns and coils
+    -   Cys-loop receptors contain aromatic cage in ligand binding domain
+-   However, feature importance should be interpreted cautiously
 :::
 
 ::: {.column width="55%"}
-
 ![](../results/figures/aa_importance_plot.png)
-
 :::
-::::
+:::::
+
+::::: columns
+::: {.column width="50%"}
+![](../results/figures/Sysloop.png)
+:::
+
+::: {.column width="50%"}
+![](../results/figures/iGluR.png)
+:::
+:::::
 
 ## Limitations and Future Directions
 
