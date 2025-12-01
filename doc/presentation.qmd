@@ -36,10 +36,14 @@ embed-resources: true
 
 ::::: columns
 ::: {.column width="50%"}
+**Dirty**
+
 ![](../results/figures/boxplots_outliers_dirty.png)
 :::
 
 ::: {.column width="50%"}
+**Clean**
+
 ![](../results/figures/boxplots_outliers_clean.png)
 :::
 :::::
