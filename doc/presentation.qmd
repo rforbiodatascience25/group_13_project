@@ -17,7 +17,7 @@ embed-resources: true
 
 -   @Mikel add information here
 
-## Materials & Methods: Dirtying -- Cleaning
+## Dirtying -- Cleaning
 
 ::::: columns
 ::: {.column width="25%"}
@@ -58,7 +58,6 @@ Combine via .row_id
 :::
 ::::::
 
-## Materials & Methods: EDA
 
 ## Materials & Methods: Prediction preprocessing
 
