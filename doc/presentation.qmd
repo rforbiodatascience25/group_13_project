@@ -17,7 +17,7 @@ embed-resources: true
 
 -   @Mikel add information here
 
-## Dirtying -- Cleaning
+## Materials and Methods: Dirtying -- Cleaning
 
 ::::: columns
 ::: {.column width="25%"}
@@ -57,7 +57,6 @@ Combine via .row_id
 ![](../results/figures/boxplots_outliers_clean.png)
 :::
 ::::::
-
 
 ## Materials & Methods: Prediction preprocessing
 
@@ -156,13 +155,11 @@ rf_spec <- rand_forest(trees = 1000) |>
 :::
 
 ::: {.column width="23%"}
-![](../results/figures/Sysloop.png){width="95%"}
-Sys-loop Receptor
+![](../results/figures/Sysloop.png){width="95%"} Sys-loop Receptor
 :::
 
 ::: {.column width="28%"}
-![](../results/figures/iGluR.png){width="95%"}
-Ionotropic Glutamate Receptor
+![](../results/figures/iGluR.png){width="95%"} Ionotropic Glutamate Receptor
 :::
 ::::::
 
