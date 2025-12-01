@@ -24,8 +24,6 @@ embed-resources: true
 - Prediction
 ```
 
-## Dirtying and Cleaning
-
 ## Dirtying -- Cleaning
 
 
@@ -53,7 +51,6 @@ Combine via .row_id
 :::
 
 
-<<<<<<< HEAD
 ::: {.columns}
 ::: {.column width="25%"}
 3. Insert outliers
@@ -62,21 +59,10 @@ Combine via .row_id
 ![](../results/figures/boxplots_outliers_dirty.png)
 :::
 ::: {.column width="37%"}
-=======
-::::: columns
-::: {.column width="50%"}
-**Dirty**
-
-![](../results/figures/boxplots_outliers_dirty.png)
-:::
-
-::: {.column width="50%"}
-**Clean**
-
->>>>>>> 5ba5a0e32bca029d71aa88749e381021e0ef481f
 ![](../results/figures/boxplots_outliers_clean.png)
 :::
 :::
+
 
 
 ## EDA
