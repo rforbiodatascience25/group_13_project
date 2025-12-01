@@ -103,13 +103,6 @@ rf_spec <- rand_forest(trees = 1000) |>
 
 # Results
 
-## Correlation Matrix
-
-::: {.column width="80%"}
-![](../results/figures/correlation_matrix.png)
-:::
-
-:::::
 
 ## PCA
 
@@ -129,6 +122,14 @@ rf_spec <- rand_forest(trees = 1000) |>
 ::: {.column width="50%"}
 ![](../results/figures/aa_importance_plot.png)
 :::
+:::::
+
+## Correlation Matrix
+
+::: {.column width="80%"}
+![](../results/figures/correlation_matrix.png)
+:::
+
 :::::
 
 ## Length and weight correlation analysis
