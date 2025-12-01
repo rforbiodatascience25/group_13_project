@@ -1,5 +1,5 @@
 ---
-title: "Analyzing Neurotransmitter Receptors & Protein Sequences"
+title: "Analyzing Neuro-Receptors & Amino Acid Composition"
 author: Mikel Garcia Amez, Elvin Kalinowski, Ákos Kimpián, Joshua Lembeck, Marcel Skumantz
 date: 02-12-2025
 format: 
@@ -11,21 +11,13 @@ embed-resources: true
 
 ## Introduction: Context
 
-<span style="font-size: 30px;">
-- Neurotransmitter receptors are key proteins in neuronal communication that detect chemical signals and translate those into cellular responses to regulate a variety of biological processes.
-</span>
+[- Neurotransmitter receptors are key proteins in neuronal communication that detect chemical signals and translate those into cellular responses to regulate a variety of biological processes.]{style="font-size: 30px;"}
 
-<span style="font-size: 30px;">
-- Many of these work as ionic channels activated by ligands and their aminoacid (Aa) sequence determines properties as ion selectivity, channel gating dynamics or subunit organization.
-</span>
+[- Many of these work as ionic channels activated by ligands and their aminoacid (Aa) sequence determines properties as ion selectivity, channel gating dynamics or subunit organization.]{style="font-size: 30px;"}
 
-<span style="font-size: 30px;">
-- Some Aa have strong influence on the structure and function of the receptors, favoring the recognition of the ligand and channel activation.
-</span>
+[- Some Aa have strong influence on the structure and function of the receptors, favoring the recognition of the ligand and channel activation.]{style="font-size: 30px;"}
 
-<span style="font-size: 30px;">
-- Understanding these principles, a relation between Aa sequences and type of receptor can be found.
-</span>
+[- Understanding these principles, a relation between Aa sequences and type of receptor can be found.]{style="font-size: 30px;"}
 
 ## Introduction: Data Set info
 
