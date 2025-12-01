@@ -17,13 +17,6 @@ This is the repo for group 13's final project of the course R for Bio Data Scien
 
 ## Dataset Neurotransmitter Receptors & Protein Sequences
 
-
-## Presentation
-
-[Link to presetation](https://raw.githack.com/rforbiodatascience25/group_13_project/main/doc/presentation.html)
-
-
-
 ## Rendering
 
 To render the project please run

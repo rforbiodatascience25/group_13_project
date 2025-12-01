@@ -21,96 +21,28 @@ embed-resources: true
 - Dirtying + Cleaning
 - EDA
 - PCA
-- Prediction
+- Prediction —> model setup + (parameters?)
 ```
 
 ## Dirtying and Cleaning
 
 :::: columns
-::: {.column width="80%"}
+::: {.column width="100%"}
 ![](../results/figures/missingness_matrix.png)
 :::
 ::::
 
-## More data
-
 ::::: columns
 ::: {.column width="50%"}
-![](../results/figures/boxplots_outliers_dirty.png)
+![](../results/figuboxplots_outliers_clean.png.png)
 :::
 
 ::: {.column width="50%"}
-![](../results/figures/boxplots_outliers_clean.png)
+![](../results/figuboxplots_outliers_clean.png.png)
 :::
 :::::
 
-## EDA
-
-## Prediction preprocessing
-
--   AA composition variables (`aa_*`) as features
--   Receptor classes using pattern-based annotation of `Protein_Name` as target
-    -   Cys-loop receptors
-    -   Ionotropic glutamate receptors
-    -   Other ionotropic receptors
-
-## PCA
-
-::::: columns
-::: {.column width="50%"}
--   Examine structure before modelling
--   using tidymodels
--   PC1 \<-\> PC2 scatter
-:::
-
-::: {.column width="50%"}
-``` r
-#...
-pca_rec <- recipe(~., data = prediction_df) |>
-  update_role(Protein_ID, Receptor_class, 
-              new_role = "id") |>
-  step_normalize(all_predictors()) |>
-  step_pca(all_predictors())
-#...
-```
-:::
-:::::
-
-## Predictive Modeling
-
-::::: columns
-::: {.column width="50%"}
--   Stratified $80$/$20$ train–test split to maintain class balance
--   Random Forest classifier with $1000$ trees
--   Basic Metrics and Mean Decrease Gini (MDG) as feature importance
-:::
-
-::: {.column width="50%"}
-``` r
-#...
-pca_rec <- recipe(~., data = prediction_df) |>
-  update_role(Protein_ID, Receptor_class, 
-              new_role = "id") |>
-  step_normalize(all_predictors()) |>
-
-rf_spec <- rand_forest(trees = 1000) |>
-  set_engine("randomForest") |>
-  set_mode("classification")
-#...
-```
-:::
-:::::
-
-# Results
-
-
-## PCA
-
-::: {.column width="80%"}
-![](../results/figures/pca_plot.png)
-:::
-
-:::::
+::: \# Results
 
 ## Results of receptor family classification
 
@@ -122,14 +54,6 @@ rf_spec <- rand_forest(trees = 1000) |>
 ::: {.column width="50%"}
 ![](../results/figures/aa_importance_plot.png)
 :::
-:::::
-
-## Correlation Matrix
-
-::: {.column width="80%"}
-![](../results/figures/correlation_matrix.png)
-:::
-
 :::::
 
 ## Length and weight correlation analysis
@@ -148,19 +72,9 @@ rf_spec <- rand_forest(trees = 1000) |>
 
 ## Biological Interpretation
 
--   Receptor classification
-
-    -   Valine, Glycine, Tryptophan, Serine, and Proline are the most discriminative amino acids for receptor prediction
-
-    -   Proline and Glycine are alpha-helix and beta-sheet breakers
-
-    -   Proline is highly relevant for loops and turns
+-   Role of the AAs for specific structural characteristics
 
 ## Limitations and Future Directions
 
 -   Success of the analysis?
-    -   prediction of Cys-loop and Glutamate ion receptors very accurate
-    -   other receptors are not well predicted due to lack of representation in the data set
-    -   
 -   What could be explored more in detail
-    -   test model against larger variety of background proteins
