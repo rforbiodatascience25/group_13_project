@@ -31,7 +31,7 @@ embed-resources: true
 
 The dataset consist on a curated collection of neurotransmitter receptors from different organisms, as well as data regarding their composition, chemical properties and structural and functional characterization.
 
-## Materials and Methods: Dirtying -- Cleaning
+## Dirtying -- Cleaning
 
 ::::: columns
 ::: {.column width="25%"}
