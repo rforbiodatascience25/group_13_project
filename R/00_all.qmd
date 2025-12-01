@@ -1,0 +1,16 @@
+---
+title: "00_all"
+format: html
+editor: visual
+embed-resources: true
+---
+
+## Run entire pipeline
+
+This cell will run and render the entire pipline
+
+```{r}
+
+source("98_render.R")
+
+```
