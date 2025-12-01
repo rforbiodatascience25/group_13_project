@@ -17,6 +17,15 @@ This is the repo for group 13's final project of the course R for Bio Data Scien
 
 ## Dataset Neurotransmitter Receptors & Protein Sequences
 
+Neurotransmitter receptors are key proteins in neuronal communication that detect chemical signals and translate those into cellular responses to regulate a variety of biological processes.
+
+Many of these work as ionic channels activated by ligands and their aminoacid (Aa) sequence determines properties as ion selectivity, channel gating dynamics or subunit organization.
+
+Some Aa have strong influence on the structure and function of the receptors, favoring the recognition of the ligand and channel activation.
+
+Understanding these principles, a relation between Aa sequences and type of receptor can be found.
+
+
 ## Rendering
 
 To render the project please run
