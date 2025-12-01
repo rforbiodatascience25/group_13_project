@@ -26,23 +26,45 @@ embed-resources: true
 
 ## Dirtying and Cleaning
 
-:::: columns
-::: {.column width="80%"}
+## Dirtying -- Cleaning
+
+
+::: {.columns}
+::: {.column width="25%"}
+1. Split data
+:::
+::: {.column width="75%"}
+Combine via .row_id
+:::
+:::
+
+
+::: {.columns}
+::: {.column width="25%"}
+2. Insert missing values
+:::
+::: {.column width="37%"}
 ![](../results/figures/missingness_matrix.png)
 :::
-::::
+::: {.column width="37%"}
+- Random missingness
+- Imputation sensible
+:::
+:::
 
-## More data
 
-::::: columns
-::: {.column width="50%"}
+::: {.columns}
+::: {.column width="25%"}
+3. Insert outliers
+:::
+::: {.column width="37%"}
 ![](../results/figures/boxplots_outliers_dirty.png)
 :::
-
-::: {.column width="50%"}
+::: {.column width="37%"}
 ![](../results/figures/boxplots_outliers_clean.png)
 :::
-:::::
+:::
+
 
 ## EDA
 
