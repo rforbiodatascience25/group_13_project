@@ -60,6 +60,12 @@ ntm_dirty |>
     theme_void()
 ```
 
+```{r}
+ggsave(here("results/figures/species_split.png"),
+       width = 5,
+       height = 5)
+```
+
 We can see multiple species commonly used in molecular biology research, with the most proteins coming from Homo sapiens, some Rattus species, Caenorhabditis elegans and some Aspergillus species. However, we also notice that there is a species called Homo_ERR, which should probably be converted to Homo in the cleaning process.
 
 Let's find out if we have some recurring functions. For this, we will count the most frequent words used in the Function column (e.g. "receptor", "serotonin", etc.). This uses the SnowballC package, so don't run unless the package is installed.
@@ -98,6 +104,12 @@ ntm_dirty |>
     y = "Counts",
     title = "Histogram of Sequence Lengths"
   )
+```
+
+```{r}
+ggsave(here("results/figures/sequence_lengths.png"),
+       width = 7,
+       height = 5)
 ```
 
 ## Merge datasets
@@ -181,6 +193,12 @@ dirty_combined |>
   )
 ```
 
+```{r}
+ggsave(here("results/figures/missingness_matrix.png"),
+       width = 7,
+       height = 5)
+```
+
 So in all character columns there are 1-4 values that are marked as error values. To create this matrix, we used pivot_longer() to be able to create a column for each variable. From the missingness matrix there seem to be no features with particularly high missingness and missingness appears to be random, meaning there are no obvious batch effects or other confounders influencing missingness.
 
 Next, we analyze outliers in our numeric data.
@@ -202,6 +220,12 @@ dirty_combined |>
     title = "Boxplots of each numeric variable"
   )
 
+```
+
+```{r}
+ggsave(here("results/figures/boxplots_outliers_dirty.png"),
+       width = 7,
+       height = 5)
 ```
 
 To make outliers of different variables comparable to one another, values have been log-normalized.
@@ -299,10 +323,17 @@ cleaner_combined |>
   ggplot(aes(x = variable, 
              y = log(value))) +
   geom_boxplot() +
+  theme_bw() +
   theme(
     axis.text.x = element_text(angle = 45, 
                                hjust = 1)
   )
+```
+
+```{r}
+ggsave(here("results/figures/boxplots_outliers_clean.png"),
+       width = 7,
+       height = 5)
 ```
 
 As is visible, the outliers have been successfully dealt with.
