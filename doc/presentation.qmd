@@ -9,7 +9,7 @@ editor: visual
 embed-resources: true
 ---
 
-## Introduction: Cotext
+## Introduction: Context
 
 <span style="font-size: 30px;">
 - Neurotransmitter receptors are key proteins in neuronal communication that detect chemical signals and translate those into cellular responses to regulate a variety of biological processes.
