@@ -24,36 +24,50 @@ embed-resources: true
 - Prediction —> model setup + (parameters?)
 ```
 
-# Results
-
-## Random Forest
-
-## Random Forest
+## Dirtying and Cleaning
 
 :::: columns
-::: {.column width="55%"}
+::: {.column width="100%"}
+![](../results/figures/missingness_matrix.png)
+:::
+::::
+
+::::: columns
+::: {.column width="50%"}
+![](../results/figuboxplots_outliers_clean.png.png)
+:::
+
+::: {.column width="50%"}
+![](../results/figuboxplots_outliers_clean.png.png)
+:::
+:::::
+
+::: \# Results
+
+## Results of receptor family classification
+
+::::: columns
+::: {.column width="50%"}
 ![](../results/figures/metrics_plot.png)
 :::
 
-::: {.column width="45%"}
-
+::: {.column width="50%"}
 ![](../results/figures/aa_importance_plot.png)
-
-![](../results/figures/confusion_matrix_plot.png)
-
 :::
-::::
+:::::
 
-## Correlations heatmap
+## Length and weight correlation analysis
 
-:::: columns
-:::{.column width="50%"}
+::::: columns
+::: {.column width="50%"}
 ![](../results/figures/lm_plot.png)
 :::
-:::{.column width="50%"}
+
+::: {.column width="50%"}
 ![](../results/figures/outlier_comp_deviation_plot.png)
 :::
-::::
+:::::
+
 # Discussion (Joshua)
 
 ## Biological Interpretation
