@@ -21,28 +21,113 @@ embed-resources: true
 - Dirtying + Cleaning
 - EDA
 - PCA
-- Prediction —> model setup + (parameters?)
+- Prediction
 ```
 
 ## Dirtying and Cleaning
 
 :::: columns
-::: {.column width="100%"}
+::: {.column width="80%"}
 ![](../results/figures/missingness_matrix.png)
 :::
 ::::
 
+
+## More data
+
 ::::: columns
 ::: {.column width="50%"}
-![](../results/figuboxplots_outliers_clean.png.png)
+![](../results/figures/boxplots_outliers_dirty.png)
 :::
 
 ::: {.column width="50%"}
-![](../results/figuboxplots_outliers_clean.png.png)
+![](../results/figures/boxplots_outliers_clean.png)
 :::
 :::::
 
-::: \# Results
+
+## EDA
+
+
+## Prediction preprocessing
+
+- AA composition variables (`aa_*`) as features
+- Receptor classes using pattern-based annotation of `Protein_Name` as target
+    - Cys-loop receptors
+    - Ionotropic glutamate receptors
+    - Other ionotropic receptors
+
+## PCA
+
+::::: columns
+::: {.column width="50%"}
+- Examine structure before modelling
+- using tidymodels
+- PC1 <-> PC2 scatter
+:::
+
+::: {.column width="50%"}
+```r
+#...
+pca_rec <- recipe(~., data = prediction_df) |>
+  update_role(Protein_ID, Receptor_class, 
+              new_role = "id") |>
+  step_normalize(all_predictors()) |>
+  step_pca(all_predictors())
+#...
+```
+:::
+:::::
+
+
+
+## Predictive Modeling
+
+::::: columns
+::: {.column width="50%"}
+- Stratified $80$/$20$ train–test split to maintain class balance
+- Random Forest classifier with $1000$ trees
+- Basic Metrics and Mean Decrease Gini (MDG) as feature importance
+:::
+
+
+::: {.column width="50%"}
+```r
+#...
+pca_rec <- recipe(~., data = prediction_df) |>
+  update_role(Protein_ID, Receptor_class, 
+              new_role = "id") |>
+  step_normalize(all_predictors()) |>
+
+rf_spec <- rand_forest(trees = 1000) |>
+  set_engine("randomForest") |>
+  set_mode("classification")
+#...
+```
+:::
+:::::
+
+
+
+
+# Results
+
+## Correlation Matrix
+
+::: {.column width="80%"}
+![](../results/figures/correlation_matrix.png)
+:::
+:::::
+
+
+## PCA
+
+::: {.column width="80%"}
+![](../results/figures/pca_plot.png)
+:::
+:::::
+
+
 
 ## Results of receptor family classification
 
