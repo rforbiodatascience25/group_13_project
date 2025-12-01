@@ -1,3 +1,4 @@
+
 ---
 title: "Analyzing Neurotransmitter Receptors & Protein Sequences"
 author: Ákos Kimpián, Joshua Lembeck, Elvin Kalinowski, Mikel Garcia Amez, Marcel Skumantz
@@ -157,9 +158,16 @@ rf_spec <- rand_forest(trees = 1000) |>
 
 ## Biological Interpretation
 
--   Role of the AAs for specific structural characteristics
+- Receptor classification
+  - Valine, Glycine, Tryptophan, Serine, and Proline are the most discriminative amino acids for receptor prediction
+  - Proline and Glycine are alpha-helix and beta-sheet breakers
+  - Proline is highly relevant for loops and turns
 
 ## Limitations and Future Directions
 
--   Success of the analysis?
--   What could be explored more in detail
+- Success of the analysis?
+  - prediction of Cys-loop and Glutamate ion receptors very accurate
+  - other receptors are not well predicted due to lack of representation in the data set
+  - 
+- What could be explored more in detail
+  - test model against larger variety of background proteins
