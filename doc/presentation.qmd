@@ -125,33 +125,18 @@ rf_spec <- rand_forest(trees = 1000) |>
 # Results
 
 
-## PCA
-
-::: {.column width="80%"}
-![](../results/figures/pca_plot.png)
-:::
-
-:::::
-
-## Results of receptor family classification
+## PCA and classification results
 
 ::::: columns
+
+::: {.column width="50%"}
+![](../results/figures/pca_plot.png)
+:::
 ::: {.column width="50%"}
 ![](../results/figures/metrics_plot.png)
 :::
-
-::: {.column width="50%"}
-![](../results/figures/aa_importance_plot.png)
-:::
 :::::
 
-## Correlation Matrix
-
-::: {.column width="80%"}
-![](../results/figures/correlation_matrix.png)
-:::
-
-:::::
 
 ## Length and weight correlation analysis
 
@@ -169,13 +154,22 @@ rf_spec <- rand_forest(trees = 1000) |>
 
 ## Biological Interpretation
 
--   Receptor classification
+:::: columns
+::: {.column width="45%"}
 
-    -   Valine, Glycine, Tryptophan, Serine, and Proline are the most discriminative amino acids for receptor prediction
 
-    -   Proline and Glycine are alpha-helix and beta-sheet breakers
+- Valine, Glycine, Tryptophan, Serine, and Proline are most discriminative
+- Proline and Glycine disrupt α-helices and β-sheets
+- Proline is dominant in loops and turns
 
-    -   Proline is highly relevant for loops and turns
+:::
+
+::: {.column width="55%"}
+
+![](../results/figures/aa_importance_plot.png)
+
+:::
+::::
 
 ## Limitations and Future Directions
 
