@@ -1,6 +1,6 @@
 ---
 title: "Analyzing Neurotransmitter Receptors & Protein Sequences"
-author: Ákos Kimpián, Joshua Lembeck, Elvin Kalinowski, Mikel Garcia Amez, Marcel Skumantz
+author: Mikel Garcia Amez, Elvin Kalinowski, Ákos Kimpián, Joshua Lembeck, Marcel Skumantz
 date: 02-12-2025
 format: 
   revealjs:
@@ -9,24 +9,15 @@ editor: visual
 embed-resources: true
 ---
 
-# Introduction
+## Introduction: Data Set info
 
 -   @Mikel add information here
 
-## Data Set info
+## Introduction: Channels
 
-## Channels
+-   @Mikel add information here
 
-# Material & Methods
-
-```         
-- Dirtying + Cleaning
-- EDA
-- PCA
-- Prediction
-```
-
-## Dirtying -- Cleaning
+## Materials & Methods: Dirtying -- Cleaning
 
 ::::: columns
 ::: {.column width="25%"}
@@ -67,9 +58,9 @@ Combine via .row_id
 :::
 ::::::
 
-## EDA
+## Materials & Methods: EDA
 
-## Prediction preprocessing
+## Materials & Methods: Prediction preprocessing
 
 -   AA composition variables (`aa_*`) as features
 -   Receptor classes using pattern-based annotation of `Protein_Name` as target
@@ -77,7 +68,7 @@ Combine via .row_id
     -   Ionotropic glutamate receptors
     -   Other ionotropic receptors
 
-## PCA
+## Materials & Methods: PCA
 
 ::::: columns
 ::: {.column width="50%"}
@@ -99,7 +90,7 @@ pca_rec <- recipe(~., data = prediction_df) |>
 :::
 :::::
 
-## Predictive Modeling
+## Materials & Methods: Predictive Modeling
 
 ::::: columns
 ::: {.column width="50%"}
@@ -181,10 +172,10 @@ Ionotropic Glutamate Receptor
 :::: {.columns style="font-size:60%; margin-bottom:-2rem;"}
 ::: {.column width="100%"}
 -   It is possible to distinguish receptor types just from the amino acid composition
-    -   prediction of Cys-loop and Glutamate ion receptors very accurate
-    -   other receptors are not well predicted due to lack of representation in the data set
+    -   Prediction of Cys-loop and Glutamate ion receptors very accurate
+    -   Other receptors are not well predicted due to lack of representation in the data set
 -   Things that could be pursued in more detail:
-    -   train a model against larger variety of background proteins
-    -   add AA sequence data to gain insight into structural features for more precise prediction
+    -   Train a model against larger variety of background proteins
+    -   Add AA sequence data to gain insight into structural features for more precise prediction
 :::
 ::::
