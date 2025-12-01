@@ -68,6 +68,5 @@ embed-resources: true
 - Success of the analysis?
   - prediction of Cys-loop and Glutamate ion receptors very accurate
   - other receptors are not well predicted due to lack of representation in the data set
-  - 
 - What could be explored more in detail
   - test model against larger variety of background proteins
